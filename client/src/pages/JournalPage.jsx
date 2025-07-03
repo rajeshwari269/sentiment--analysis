@@ -1,0 +1,51 @@
+import React, { useState } from "react";
+import TextInput from "../components/TextInput";
+import SentimentCard from "../components/SentimentCard";
+
+const JournalPage = () => {
+  const [text, setText] = useState("");
+  const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    setResult(null);
+    try {
+      const res = await fetch("http://localhost:5000/api/journal/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      });
+      if (!res.ok) throw new Error("API error");
+      const data = await res.json();
+      setResult(data);
+    } catch (err) {
+      setError("Failed to analyze sentiment");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="p-4 max-w-xl mx-auto">
+      <h2 className="text-2xl mb-4">Journal Sentiment Analysis</h2>
+      <form onSubmit={handleSubmit} className="mb-4">
+        <TextInput
+          value={text}
+          onChange={e => setText(e.target.value)}
+          placeholder="How are you feeling today?"
+        />
+        <button className="mt-2 px-4 py-2 bg-blue-600 text-white rounded" type="submit" disabled={loading}>
+          {loading ? "Analyzing..." : "Analyze"}
+        </button>
+      </form>
+      {error && <div className="text-red-500 mb-2">{error}</div>}
+      {result && <SentimentCard sentiment={result.sentiment} emotion={result.emotion} />}
+    </div>
+  );
+};
+
+export default JournalPage; 
