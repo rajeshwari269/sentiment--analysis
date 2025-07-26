@@ -38,7 +38,7 @@ const FeatureCards = () => {
             key={f.key}
             className={`flex-1 bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl p-8 text-center border border-pink-100 hover:scale-105 hover:shadow-2xl transition-transform cursor-pointer relative group overflow-hidden`}
             onMouseEnter={() => setHovered(f.key)}
-            onMouseLeave={() => setHovered(null)}
+            onMouseLeave={() => setHovered(null)}   
           >
             <div className="flex flex-col items-center justify-center">
               <div className="mb-2">{f.icon}</div>

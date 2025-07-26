@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import JournalPage from "./pages/JournalPage";
 import NewsPage from "./pages/NewsPage";
-import Dashboard from "./pages/Dashboard";
+import Dashboard from "../src/Dashboard";
 import HomePage from "./pages/HomePage";
 
 function App() {
