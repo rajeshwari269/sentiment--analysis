@@ -57,13 +57,3 @@ const FeatureCards = () => {
 };
 
 export default FeatureCards;
-
-// Add to global CSS for animated chart line:
-// .animate-dash {
-//   stroke-dasharray: 100;
-//   stroke-dashoffset: 100;
-//   animation: dashmove 1s linear forwards;
-// }
-// @keyframes dashmove {
-//   to { stroke-dashoffset: 0; }
-// } 
