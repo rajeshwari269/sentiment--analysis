@@ -32,7 +32,7 @@ function UserProfile() {
         console.log(err);
       }
     }
-
+    getDetails()
   }, []);
 
   const handlePhotoChange = (e) => {
