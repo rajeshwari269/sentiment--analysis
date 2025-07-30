@@ -80,7 +80,6 @@ function UserProfile() {
 
   return (
     <div className="bg-gradient-to-br from-blue-100 via-indigo-100 to-pink-100 min-h-screen flex-col relative overflow-hidden h-screen w-screen">
-      <Navbar />
       {/* Background blobs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-48 -right-48 w-[30rem] h-[30rem] bg-gradient-to-br from-purple-300 to-blue-200 rounded-full opacity-25 blur-[140px]" />
