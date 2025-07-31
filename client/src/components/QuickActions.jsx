@@ -198,7 +198,7 @@ const QuickActions = () => {
                   boxShadow: '0 10px 20px rgba(5, 95, 70, 0.3)',
                 }}
               >
-                {isAuthenticated() ? 'Log a Mood Entry' : 'Login to Log Mood'}
+                Log a Mood Entry
               </button>
             </div>
             {error && (
