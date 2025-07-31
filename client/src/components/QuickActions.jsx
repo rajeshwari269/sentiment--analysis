@@ -1,8 +1,10 @@
 import React, { useState, useEffect,useContext } from "react";
 import SentimentCard from "./SentimentCard";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../axios";
 import { ThemeContext } from "../context/ThemeContext";
+import toast, { Toaster } from "react-hot-toast";
+
 const themeColors = {
   light: {
     '--bg': '#ffffff',
@@ -89,6 +91,13 @@ const QuickActions = () => {
   const [error, setError] = useState(null);
   const [showResult, setShowResult] = useState(false);
   const { theme } = useContext(ThemeContext);
+  const navigate = useNavigate();
+
+  // Check authentication
+  const isAuthenticated = () => {
+    return localStorage.getItem('token') !== null;
+  };
+
   useEffect(() => {
     const root = document.documentElement;
     const theme = 'dark';
@@ -112,6 +121,22 @@ const QuickActions = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleMoodEntry = () => {
+    if (!isAuthenticated()) {
+      toast.error("Please login to write your journal or log mood", {
+        duration: 4000,
+        position: 'top-center',
+      });
+      
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
+      return;
+    }
+    
+    navigate('/journal');
   };
 
   return (
@@ -165,18 +190,16 @@ const QuickActions = () => {
                   "Analyze"
                 )}
               </button>
-              <Link
-                to="/journal"
+              <button
+                onClick={handleMoodEntry}
                 className="px-6 py-2 text-white rounded-xl font-semibold shadow-lg hover:scale-105 focus:ring-4 focus:ring-emerald-500/30 transition-all duration-200"
                 style={{
                   backgroundColor: 'var(--success-bg)',
                   boxShadow: '0 10px 20px rgba(5, 95, 70, 0.3)',
                 }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = 'var(--success-hover)'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--success-bg)'}
               >
-                Log a Mood Entry
-              </Link>
+                {isAuthenticated() ? 'Log a Mood Entry' : 'Login to Log Mood'}
+              </button>
             </div>
             {error && (
               <div className="text-red-400 mt-2 p-3 bg-red-900/20 border border-red-500/30 rounded-lg">
@@ -200,6 +223,17 @@ const QuickActions = () => {
             </div>
           </div>
         </div>
+        
+        <Toaster 
+          position="top-center" 
+          reverseOrder={false}
+          toastOptions={{
+            style: {
+              background: theme === 'dark' ? '#374151' : '#ffffff',
+              color: theme === 'dark' ? '#f9fafb' : '#111827',
+            },
+          }}
+        />
       </section>
     </div>
   );
