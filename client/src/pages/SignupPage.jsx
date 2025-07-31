@@ -61,6 +61,12 @@ function SignupPage() {
     if (form.profilePhoto) {
       formData.append("profilePhoto", form.profilePhoto); 
     }
+
+     console.log(" FormData being sent:");
+      for (const [key, value] of formData.entries()) {
+      console.log(`${key}: ${value}`);
+  }
+
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/signup`, {
         method: "POST",
         body: formData,
