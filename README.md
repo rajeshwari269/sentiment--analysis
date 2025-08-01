@@ -13,13 +13,31 @@ SentiLog AI is an open-source platform that combines news sentiment analysis and
 
 ---
 
+## 🌟 Core Features
+SentiLog AI provides a unique fusion of sentiment-aware news analysis and personal mental wellness tracking through the following key features:
+
+### 📰 Real-Time News Bias Filter
+- Automatically analyzes current news articles and classifies them based on political bias: Left, Right, or Neutral.
+- Helps users recognize media bias and form balanced opinions.
+- Uses Natural Language Processing (NLP) models to assess sentiment and ideological leaning in real-time.
+
+### 📓 Daily Mood Journal
+- Users can write daily journal entries about their thoughts or experiences.
+- The system performs sentiment and emotion analysis (e.g., happy, sad, anxious).
+- Helps users track their mental state over time, identifying patterns or triggers.
+- Journal data can be cross-referenced with consumed news to understand the impact of external events on personal emotions.
+
+---
+
 ## 📁 Project Structure
 
 ```
 project-root/
 │
-├── client/                  # React frontend (Vite + Tailwind)
-│   └── src/
+├── client/ 
+|   ├── index.html/
+|   ├── public/                 
+│   └── src/                 # React frontend (Vite + Tailwind)
 │       ├── pages/           # JournalPage, NewsPage, Dashboard
 │       ├── components/      # Navbar, SentimentCard, ChartPanel
 │       ├── App.jsx
@@ -28,14 +46,21 @@ project-root/
 ├── server/                  # Node.js + Express backend
 │   ├── routes/              # journal.js, news.js
 │   ├── controllers/
+|   ├── middlewares/         # Express entry
+|   ├── uploads/
+|   ├── utils/
 │   ├── models/              # Mongo schemas
-│   └── index.js             # Express entry
+│   └── index.js             
 │
 ├── ml-api/                  # Flask-based ML service
 │   ├── app.py
 │   ├── model/
+|   ├── vader_service.py/
 │   └── requirements.txt
-│
+|
+├── notebook/
+|    ├── varder_sentiment_demo.ipynb
+│    
 ├── .gitignore
 ├── README.md
 └── package.json / envs
@@ -48,8 +73,8 @@ project-root/
 ### 1. Clone the Repo
 
 ```bash
-git clone https://github.com/your-org/SentiLogAI.git
-cd SentiLogAI
+git clone https://github.com/your-org/SentiLog-AI.git
+cd SentiLog-AI
 ```
 
 ---
@@ -125,7 +150,15 @@ python app.py
 
 ## 📝 License
 
-MIT © [Your Name or Org]
+This project is licensed under the **MIT License** — see the [LICENSE](./LICENSE) file for details.
+
+The MIT License is a permissive license that allows you to:
+
+*   Freely use, copy, modify, and distribute the code.  
+*   Use the project in commercial and non-commercial applications.  
+*   Attribute the original creator(s) in any reused version.  
+
+By contributing to this repository, you agree that your contributions will be licensed under the MIT License as well.
 
 ---
 
@@ -147,3 +180,6 @@ MIT © [Your Name or Org]
 ---
 
 > _Let's build the future of mood and news analysis together!_ 
+
+
+## Folder Structure
