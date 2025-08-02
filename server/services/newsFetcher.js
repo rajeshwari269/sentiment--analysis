@@ -62,7 +62,6 @@ const fetchAndPostNews = async ({ topic = "India", hours = 36 } = {}) => {
       }
 
       for (const entry of entries) {
-        console.log(entry.url);
         await createNewsEntry(entry.url, entry.title, entry.text, entry.date);
         console.log(`✅ Posted from ${source.name}: ${entry.title}`);
       }
@@ -80,7 +79,7 @@ async function createNewsEntry(url, title, text, date) {
       const mlRes = await axios.post(`${process.env.ML_API_URL}/vader/analyze`, { text });
   
       // Extract sentiment (positive/negative/neutral) and emotion data from ML response
-      const { sentiment, emotion } = mlRes.data;
+      const { sentiment} = mlRes.data;
       
   
       // Create new news entry in database with original data + ML analysis results
@@ -89,7 +88,6 @@ async function createNewsEntry(url, title, text, date) {
         title,
         text,
         sentiment,
-        emotion,
         date,
       });
   

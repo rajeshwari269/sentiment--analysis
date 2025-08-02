@@ -113,7 +113,7 @@ const QuickActions = () => {
     setResult(null);
     setShowResult(false);
     try {
-      const res = await api.post("/api/news/analyze", { text });
+      const res = await api.post("/api/analyze/text", { text });
       setResult(res.data);
       setTimeout(() => setShowResult(true), 200);
     } catch (err) {
