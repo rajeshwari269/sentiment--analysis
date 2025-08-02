@@ -123,8 +123,9 @@ const QuickActions = () => {
     }
   };
 
-  const handleMoodEntry = () => {
+  const handleMoodEntry = (e) => {
     if (!isAuthenticated()) {
+      e.preventDefault(); // Prevent navigation
       toast.error("Please login to write your journal or log mood", {
         duration: 4000,
         position: 'top-center',
@@ -135,8 +136,7 @@ const QuickActions = () => {
       }, 2000);
       return;
     }
-    
-    navigate('/journal');
+    // If authenticated, allow normal Link navigation
   };
 
   return (
@@ -190,16 +190,17 @@ const QuickActions = () => {
                   "Analyze"
                 )}
               </button>
-              <button
+              <Link
+                to="/journal"
                 onClick={handleMoodEntry}
-                className="px-6 py-2 text-white rounded-xl font-semibold shadow-lg hover:scale-105 focus:ring-4 focus:ring-emerald-500/30 transition-all duration-200"
+                className="px-6 py-2 text-white rounded-xl font-semibold shadow-lg hover:scale-105 focus:ring-4 focus:ring-emerald-500/30 transition-all duration-200 inline-block text-center"
                 style={{
                   backgroundColor: 'var(--success-bg)',
                   boxShadow: '0 10px 20px rgba(5, 95, 70, 0.3)',
                 }}
               >
                 Log a Mood Entry
-              </button>
+              </Link>
             </div>
             {error && (
               <div className="text-red-400 mt-2 p-3 bg-red-900/20 border border-red-500/30 rounded-lg">
