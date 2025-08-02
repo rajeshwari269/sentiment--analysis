@@ -5,7 +5,7 @@ const jwtmiddleware = require("../middleware/jwt");
 
 /**
  * @swagger
- * /journal:
+ * /journal/create:
  *   post:
  *     summary: Create a new journal entry (Authentication Required)
  *     tags: [Journal]
@@ -27,6 +27,8 @@ const jwtmiddleware = require("../middleware/jwt");
  *         description: Authentication required
  */
 journalRouter.post("/", jwtmiddleware, journalController.createEntry);
+
+journalRouter.post("/create", journalController.createEntry);
 
 /**
  * @swagger

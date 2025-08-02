@@ -16,28 +16,21 @@ const axios = require('axios');
  * @returns {Object} 500 - Server error if ML service fails or database error
  */
 
-exports.createEntry = async (req, res, next) => {
+exports.createEntry = async (req, res) => {
   try {
     const { text } = req.body;
-    const userId = req.userid;
-    
-    // Try ML service first, fallback to simple analysis if unavailable
-    let sentiment, emotion;
-    try {
-      const mlRes = await axios.post('http://localhost:5001/predict', { text });
-      ({ sentiment, emotion } = mlRes.data);
-    } catch (mlError) {
-      console.warn('ML service unavailable, using fallback analysis');
-      sentiment = text.includes('bad') || text.includes('sad') ? 'negative' : 
-                 text.includes('good') || text.includes('happy') ? 'positive' : 'neutral';
-      emotion = text.includes('sad') ? 'sadness' : 
-               text.includes('happy') ? 'joy' : 'neutral';
-    }
-    
-    const entry = await JournalEntry.create({ userId, text, sentiment, emotion });
+  const userId = req.userid;
+    const mlRes = await axios.post(`${process.env.ML_API_URL}/vader/analyze`, { text });
+    const { sentiment, emotion } = mlRes.data;
+    const entry = await JournalEntry.create({ userId, text, sentiment, emotion});
+
+
+    const { sentiment } = mlRes.data;
+    const entry = await JournalEntry.create({ text, sentiment });
     res.status(201).json(entry);
   } catch (err) {
-    next(err);
+    console.error('Error creating journal entry:', err.message);
+    res.status(500).json({ error: 'Failed to create journal entry' });
   }
 };
 
@@ -53,13 +46,14 @@ exports.createEntry = async (req, res, next) => {
  * @returns {Array} 200 - Array of user's journal entries sorted by creation date (descending)
  * @returns {Object} 500 - Server error if database query fails
  */
-exports.getEntries = async (req, res, next) => {
+exports.getEntries = async (req, res) => {
   try {
     const userId = req.userid;
     const entries = await JournalEntry.find({ userId }).sort({ createdAt: -1 });
     res.json(entries);
   } catch (err) {
-    next(err);
+    console.error('Error fetching journal entries:', err.message);
+    res.status(500).json({ error: 'Failed to fetch journal entries' });
   }
 };
 
@@ -78,14 +72,15 @@ exports.getEntries = async (req, res, next) => {
  * @returns {Object} 500 - Server error if database query fails
  */
 
-exports.getEntry = async (req, res, next) => {
+exports.getEntry = async (req, res) => {
   try {
     const userId = req.userid;
     const entry = await JournalEntry.findOne({ _id: req.params.id, userId });
     if (!entry) return res.status(404).json({ error: 'Not found' });
     res.json(entry);
   } catch (err) {
-    next(err);
+    console.error('Error fetching journal entry:', err.message);
+    res.status(500).json({ error: 'Failed to fetch journal entry' });
   }
 };
 
@@ -104,13 +99,14 @@ exports.getEntry = async (req, res, next) => {
  * @returns {Object} 500 - Server error if database operation fails
  */
 
-exports.deleteEntry = async (req, res, next) => {
+exports.deleteEntry = async (req, res) => {
   try {
     const userId = req.userid;
     const entry = await JournalEntry.findOneAndDelete({ _id: req.params.id, userId });
     if (!entry) return res.status(404).json({ error: 'Not found' });
     res.json({ message: 'Deleted' });
   } catch (err) {
-    next(err);
+    console.error('Error deleting journal entry:', err.message);
+    res.status(500).json({ error: 'Failed to delete journal entry' });
   }
 };
