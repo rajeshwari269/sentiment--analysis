@@ -53,7 +53,6 @@ const JournalPage = () => {
     setResult(null);
     
     try {
-
       const token = localStorage.getItem('token');
       const res = await api.post("/api/journal", { text }, {
         headers: {
@@ -61,8 +60,6 @@ const JournalPage = () => {
         }
       });
       
-
-      const res = await api.post("/api/journal/create", { text });
       setResult(res.data);
       toast.success("Journal added successfully!");
     } catch (err) {

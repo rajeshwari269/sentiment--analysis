@@ -1,9 +1,7 @@
 import React, { useContext, useEffect} from "react";
 import { ThemeContext } from "../context/ThemeContext";
 import { Link } from "react-router-dom";
-import { Github, Linkedin, Mail, Heart, Zap, Shield, TrendingUp } from "lucide-react";
-import { SiX } from "react-icons/si";
-
+import { Github, Twitter, Linkedin, Mail, Heart, Zap, Shield, TrendingUp } from "lucide-react";
 
 const Footer = () => {
   const { theme } = useContext(ThemeContext);
@@ -42,7 +40,7 @@ const Footer = () => {
               </a>
               <a href="https://x.com" target="_blank" rel="noopener noreferrer"
                  className="p-2 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
-                <SiX className="h-5 w-5 text-slate-700 dark:text-slate-300" />
+                <Twitter className="h-5 w-5 text-slate-700 dark:text-slate-300" />
               </a>
               <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer"
                  className="p-2 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
