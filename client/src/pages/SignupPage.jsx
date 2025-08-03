@@ -53,6 +53,7 @@ function SignupPage() {
 
       if (res.ok && data.token) {
         localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
         setSuccess("Signed up successfully! Redirecting...");
         setTimeout(() => navigate("/"), 1500);  // Redirect to Home page after signup
       } else {

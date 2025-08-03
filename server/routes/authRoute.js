@@ -1,5 +1,8 @@
 const { Router } = require("express");
 // your logic here
+const { deleteAccount } = require("../controllers/authController");
+const jwtmiddleware = require("../middleware/jwt");
+
 
 const authRouter = Router();
 
@@ -98,5 +101,20 @@ authRouter.post("/forgot-password", forgotPassword);
  *         description: Password reset successful
  */
 authRouter.post("/reset-password", resetPassword);
+
+/**
+ * @swagger
+ * /auth/delete-account:
+ *   delete:
+ *     summary: Delete the currently logged-in user's account
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Account deleted successfully
+ */
+authRouter.delete("/delete-account", jwtmiddleware, deleteAccount);
+
 
 module.exports = authRouter;

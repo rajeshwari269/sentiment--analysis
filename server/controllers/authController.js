@@ -30,7 +30,7 @@ const signup = async (req, res) => {
     // Generate JWT token
     const token = jwt.sign(
       { userId: user._id, email: user.email },
-      process.env.Jwt_USER_SECRET,
+      process.env.JWT_USER_SECRET,
       { expiresIn: '1h' }
     );
 
@@ -80,7 +80,17 @@ const signin = async (req, res) => {
 
     console.log("User authenticated:", user.email);
 
-    return res.json({ token });
+    return res.json({
+      message: "Login successful",
+      token,
+      user: {
+        id: user._id,
+        firstname: user.firstname,
+        lastname: user.lastname,
+        email: user.email
+      }
+    });
+
 
   } catch (e) {
     console.error("Signin error:", e);
@@ -161,6 +171,23 @@ const resetPassword = async (req, res) => {
   }
 };
 
+const deleteAccount = async (req, res) => {
+  try {
+    const userId = req.userid; // set by jwtmiddleware
+
+    const user = await userModel.findByIdAndDelete(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).json({ message: "Account deleted successfully" });
+  } catch (err) {
+    console.error("Delete Account Error:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
 
 
-module.exports = { signup, signin, forgotPassword, resetPassword };
+
+
+module.exports = { signup, signin, forgotPassword, resetPassword,deleteAccount };
