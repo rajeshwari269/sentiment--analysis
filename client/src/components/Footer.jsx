@@ -1,8 +1,8 @@
-import React, { useContext, useEffect} from "react";
-import { ThemeContext } from "../context/ThemeContext";
-import { Link } from "react-router-dom";
-import { Github, Linkedin, Mail, Heart, Zap, Shield, TrendingUp } from "lucide-react";
+import { Github, Heart, Linkedin, Mail, Shield, TrendingUp, Zap } from "lucide-react";
+import { useContext, useEffect } from "react";
 import { SiX } from "react-icons/si";
+import { Link } from "react-router-dom";
+import { ThemeContext } from "../context/ThemeContext";
 
 
 const Footer = () => {
@@ -21,7 +21,7 @@ const Footer = () => {
     <footer className="bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-950 border-t border-slate-200 dark:border-slate-800">
       <div className="max-w-7xl mx-auto px-6 pt-16 pb-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12" data-aos="fade-up">
-          
+
           {/* Brand Section */}
           <div className="lg:col-span-2" data-aos="fade-up" data-aos-delay="100">
             <div className="flex items-center space-x-3 mb-6">
@@ -36,20 +36,20 @@ const Footer = () => {
               Transform your data into actionable insights with the power of advanced sentiment analysis and AI-driven analytics.
             </p>
             <div className="flex space-x-4">
-              <a href="https://github.com" target="_blank" rel="noopener noreferrer" 
-                 className="p-2 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
+              <a href="https://github.com" target="_blank" rel="noopener noreferrer"
+                className="p-2 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
                 <Github className="h-5 w-5 text-slate-700 dark:text-slate-300" />
               </a>
               <a href="https://x.com" target="_blank" rel="noopener noreferrer"
-                 className="p-2 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
+                className="p-2 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
                 <SiX className="h-5 w-5 text-slate-700 dark:text-slate-300" />
               </a>
               <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer"
-                 className="p-2 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
+                className="p-2 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
                 <Linkedin className="h-5 w-5 text-slate-700 dark:text-slate-300" />
               </a>
-              <a href="https://gmail.com" target="_blank" rel="noopener noreferrer" 
-                 className="p-2 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
+              <a href="https://gmail.com" target="_blank" rel="noopener noreferrer"
+                className="p-2 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
                 <Mail className="h-5 w-5 text-slate-700 dark:text-slate-300" />
               </a>
             </div>
@@ -79,7 +79,7 @@ const Footer = () => {
             <ul className="space-y-4">
               <li><Link to="/" className="text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Help Center</Link></li>
               <li><Link to="/Contact" className="text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Contact Us</Link></li>
-              <li><Link to="/" className="text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">About Us</Link></li>
+              <li><Link to="/about" className="text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">About Us</Link></li>
               <li><Link to="/" className="text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">System Status</Link></li>
               <li><Link to="/privacy-policy" className="text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Privacy Policy</Link></li>
             </ul>
@@ -88,8 +88,8 @@ const Footer = () => {
 
         {/* Bottom Section */}
         <div className="mt-16 pt-5 border-t border-slate-200 dark:border-slate-800" data-aos="fade-up" data-aos-delay="400" data-aos-offset="0"
-  data-aos-duration="800"
-  data-aos-anchor-placement="top-bottom">
+          data-aos-duration="800"
+          data-aos-anchor-placement="top-bottom">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="flex items-center space-x-2 text-slate-600 dark:text-slate-400">
               <span>© {new Date().getFullYear()} SentiLog AI</span>

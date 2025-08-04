@@ -1,23 +1,23 @@
-import React, { useEffect, useState } from "react";
-import ScrollToTop from "./components/ScrollToTop";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
-import JournalPage from "./pages/JournalPage";
-import NewsPage from "./pages/NewsPage";
-import Dashboard from "./pages/Dashboard";
-import HomePage from "./pages/HomePage";
-import AnalyzePage from "./pages/AnalyzePage";
-import SignupPage from "./pages/SignupPage";
-import LoginPage from "./pages/LoginPage";
-import ForgotPassword from "./pages/ForgotPassword";
-import ResetPassword from "./pages/ResetPassword"; 
-import Loader from "./components/Preloader/Loader";
-import UserProfile from "./pages/UserProfile"
 import AOS from "aos";
 import "aos/dist/aos.css";
+import { useEffect } from "react";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import Footer from "./components/Footer";
+import Navbar from "./components/Navbar";
+import ScrollToTop from "./components/ScrollToTop";
+import AnalyzePage from "./pages/AnalyzePage";
 import { ContactPage } from "./pages/ContactPage";
+import Dashboard from "./pages/Dashboard";
+import ForgotPassword from "./pages/ForgotPassword";
+import HomePage from "./pages/HomePage";
+import JournalPage from "./pages/JournalPage";
+import LoginPage from "./pages/LoginPage";
+import NewsPage from "./pages/NewsPage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
+import ResetPassword from "./pages/ResetPassword";
+import SignupPage from "./pages/SignupPage";
+import UserProfile from "./pages/UserProfile";
+import About from "./components/About";
 
 
 function App() {
@@ -30,7 +30,7 @@ function App() {
 
   return (
     <>
-      
+
       <Router>
         <ScrollToTop />
         <Navbar />
@@ -40,13 +40,14 @@ function App() {
           <Route path="/analyze" element={<AnalyzePage />} />
           <Route path="/journal" element={<JournalPage />} />
           <Route path="/news" element={<NewsPage />} />
+          <Route path="/about" element={<About />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/Contact" element={<ContactPage />} />
           <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/user-profile" element={<UserProfile />}/>
+          <Route path="/user-profile" element={<UserProfile />} />
         </Routes>
         <Footer />
       </Router>
