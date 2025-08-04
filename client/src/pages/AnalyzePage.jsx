@@ -78,7 +78,7 @@ const AnalyzePage = () => {
     formData.append("file", file);
 
     try {
-      const res = await api.post("/api/analyze", formData, {
+      const res = await api.post("/api/analyze/file", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
@@ -215,7 +215,7 @@ const AnalyzePage = () => {
           >
             {uploadedFile ? (
               <div className="space-y-4">
-                <CheckCircle className="w-16 h-16 mx-auto text-green-500" />
+                <CheckCircle className="w-16 h-16 mx-auto text-blue-600" />
                 <div>
                   <h3 className={`text-xl font-semibold mb-2 ${
                     theme === 'dark' ? 'text-gray-100' : 'text-gray-800'

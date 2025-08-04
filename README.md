@@ -73,7 +73,7 @@ project-root/
 
 ## 🚀 Quick Start
 
-### 1. Clone the Repo
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/your-org/SentiLog-AI.git
@@ -119,7 +119,7 @@ npm run dev
 
 Once your backend server is running, you can explore all API endpoints using **Swagger UI**:
 
-[http://localhost:5000/api-docs](http://localhost:5000/api-docs)
+[https://sentilog-ai.onrender.com/api-docs](https://sentilog-ai.onrender.com/api-docs)
 
 This interactive documentation provides:
 
@@ -199,11 +199,5 @@ By contributing to this repository, you agree that your contributions will be li
 
 ---
 
-<<<<<<< HEAD
-> _Let's build the future of mood and news analysis together!_
-=======
-> _Let's build the future of mood and news analysis together!_ 
+> _Let’s build the future of mood and news analysis together — one contribution at a time! _ 
 
-
-## Folder Structure
->>>>>>> d981f6171a5d4a52fee4b662f872c48bebd7eaf4

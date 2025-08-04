@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
+import ScrollToTop from "./components/ScrollToTop";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import JournalPage from "./pages/JournalPage";
 import NewsPage from "./pages/NewsPage";
 import Dashboard from "./pages/Dashboard";
@@ -30,6 +32,7 @@ function App() {
     <>
       
       <Router>
+        <ScrollToTop />
         <Navbar />
         <Routes>
           <Route path="/" element={<HomePage />} />
@@ -45,6 +48,7 @@ function App() {
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/user-profile" element={<UserProfile />}/>
         </Routes>
+        <Footer />
       </Router>
     </>
   );
