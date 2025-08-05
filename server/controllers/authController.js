@@ -4,7 +4,16 @@ const userModel = require('../models/user');
 const nodemailer = require('nodemailer');
 const axios = require('axios');
 require('dotenv').config();
-const uploadFile =require("../middleware/cloudinary.js")
+
+// Conditionally import Cloudinary only if environment variables are set
+let uploadFile = null;
+try {
+  if (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET) {
+    uploadFile = require("../middleware/cloudinary.js");
+  }
+} catch (error) {
+  console.warn("Cloudinary not configured - image uploads will be disabled");
+}
 const signup = async (req, res) => {
   console.log("Signup request received:", req.body);
 
@@ -22,7 +31,7 @@ const signup = async (req, res) => {
 
     // Getting profile photo
     const profilePhotoPath = req.file?.path;
-    if (profilePhotoPath){
+    if (profilePhotoPath && uploadFile){
         profilephoto=await uploadFile(profilePhotoPath)
          if(!profilephoto) return res.status(500).json({
                 message:"profile photo not uploaded successfully"
@@ -353,7 +362,7 @@ const updateUserProfile=async (req,res)=>{
       return res.status(404).json({ message: "Invalid user" });
     }
     let profilephoto = user.profilephoto;
-    if (profilePhotoPath){
+    if (profilePhotoPath && uploadFile){
         profilephoto=await uploadFile(profilePhotoPath)
          if(!profilephoto) return res.status(500).json({
                 message:"profile photo not uploaded successfully"

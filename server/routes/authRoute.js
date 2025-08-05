@@ -137,7 +137,9 @@ module.exports = authRouter;
  *               lastname: { type: string }
  *               email: { type: string, format: email }
  *               password: { type: string, format: password }
- *               profilePhoto:{type: string,format: binary}
+ *               profilePhoto:
+ *                 type: string
+ *                 format: binary
  *     responses:
  *       201:
  *         description: User created
