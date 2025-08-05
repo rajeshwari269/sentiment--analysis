@@ -182,7 +182,7 @@ const resetPassword = async (req, res) => {
   }
 };
 
-=
+
 const deleteAccount = async (req, res) => {
   try {
     const userId = req.userid; // set by jwtmiddleware
