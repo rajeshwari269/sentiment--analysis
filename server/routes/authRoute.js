@@ -1,8 +1,7 @@
-
 const { Router } = require('express');
-const { signup, signin, forgotPassword, resetPassword,userProfile,updateUserProfile } = require('../controllers/authController'); // your logic here
+const { signup, signin, forgotPassword, resetPassword,userProfile,updateUserProfile,deleteAccount } = require('../controllers/authController'); // your logic here
 const {upload}=require("../middleware/multer")
-
+const jwtmiddleware = require("../middleware/jwt");
 const authRouter = Router();
 authRouter.post('/signup',upload.single("profilePhoto") ,signup);
 authRouter.post('/signin', signin);
@@ -100,6 +99,21 @@ authRouter.post("/user-profile-update",upload.single("profilePhoto"),updateUserP
  *         description: Password reset successful
  */
 
+
+
+/**
+ * @swagger
+ * /auth/delete-account:
+ *   delete:
+ *     summary: Delete the currently logged-in user's account
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Account deleted successfully
+ */
+authRouter.delete("/delete-account", jwtmiddleware, deleteAccount);
 
 
 module.exports = authRouter;

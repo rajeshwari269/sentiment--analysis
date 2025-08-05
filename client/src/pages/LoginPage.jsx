@@ -46,7 +46,10 @@ function LoginPage() {
 
       if (res.ok && data.token) {
         localStorage.setItem("token", data.token);
-        navigate("/");
+
+        localStorage.setItem("user", JSON.stringify(data.user));
+
+        navigate("/");  // Redirect to Home page after login
       } else {
         setError(data.message || `Login failed with status ${res.status}`);
       }
