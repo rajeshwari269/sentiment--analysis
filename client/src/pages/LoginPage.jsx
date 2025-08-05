@@ -113,11 +113,19 @@ function LoginPage() {
         </button>
 
         </form>
-        <div style={{ textAlign: 'right', marginBottom: '10px' }}>
-          <Link to="/forgot-password" className="text-blue-600 dark:text-blue-400 hover:underline">
+        <div className="mt-4 flex flex-col gap-2 items-center">
+        <div className="w-full text-right">
+          <Link to="/forgot-password" className="text-blue-600 dark:text-blue-400 hover:underline text-sm">
             Forgot Password?
           </Link>
         </div>
+        <p className="text-md text-gray-700 dark:text-gray-300">
+          Don’t have an account?{" "}
+          <Link to="/signup" className="text-blue-600 dark:text-blue-400 hover:underline">
+            Sign Up
+          </Link>
+        </p>
+      </div>
       </div>
     </div>
   );
