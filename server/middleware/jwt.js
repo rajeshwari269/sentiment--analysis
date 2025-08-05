@@ -1,9 +1,10 @@
-const express = require('express')
-const jwt = require('jsonwebtoken')
+
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 
-require('dotenv').config()
-const Jwt_USER_SECRET=process.env.Jwt_USER_SECRET
+const JWT_USER_SECRET = process.env.JWT_USER_SECRET;
+
 
 async function jwtmiddleware(req,res,next){
     try{
@@ -29,5 +30,9 @@ async function jwtmiddleware(req,res,next){
             message:"Invalid or expired token"
         })
     }
+
+    
 }
+
+
 module.exports = jwtmiddleware;

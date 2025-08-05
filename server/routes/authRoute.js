@@ -1,15 +1,8 @@
-const { Router } = require("express");
-const {
-  signup,
-  signin,
-  forgotPassword,
-  resetPassword,
-  githubCallback,
-  userProfile,
-  updateUserProfile,
-} = require("../controllers/authController");
-const { upload } = require("../middleware/multer");
 
+const { Router } = require('express');
+const { signup, signin, forgotPassword, resetPassword,userProfile,updateUserProfile,deleteAccount,  githubCallback } = require('../controllers/authController'); // your logic here
+const {upload}=require("../middleware/multer")
+const jwtmiddleware = require("../middleware/jwt");
 const authRouter = Router();
 
 // ======= GitHub OAuth =======
@@ -138,8 +131,8 @@ module.exports = authRouter;
  *               email: { type: string, format: email }
  *               password: { type: string, format: password }
  *               profilePhoto:
- *                 type: string
- *                 format: binary
+ *               type: string
+ *               format: binary
  *     responses:
  *       201:
  *         description: User created
@@ -209,3 +202,24 @@ module.exports = authRouter;
  *       200:
  *         description: Password reset successful
  */
+
+
+
+
+/**
+ * @swagger
+ * /auth/delete-account:
+ *   delete:
+ *     summary: Delete the currently logged-in user's account
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Account deleted successfully
+ */
+authRouter.delete("/delete-account", jwtmiddleware, deleteAccount);
+
+
+module.exports = authRouter;
+

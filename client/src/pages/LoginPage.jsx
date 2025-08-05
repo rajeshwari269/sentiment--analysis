@@ -43,7 +43,10 @@ function LoginPage() {
 
       if (res.ok && data.token) {
         localStorage.setItem("token", data.token);
-        navigate("/");
+
+        localStorage.setItem("user", JSON.stringify(data.user));
+
+        navigate("/");  // Redirect to Home page after login
       } else {
         setError(data.message || `Login failed with status ${res.status}`);
       }
@@ -139,15 +142,22 @@ function LoginPage() {
             )}
           </button>
         </form>
-        
-        <div className="flex justify-between items-center mt-4 text-sm">
-          <Link to="/forgot-password" className="text-blue-600 dark:text-blue-400 hover:underline">
+        <div className="mt-4 flex flex-col gap-2 items-center">
+        <div className="w-full text-right">
+          <Link to="/forgot-password" className="text-blue-600 dark:text-blue-400 hover:underline text-sm">
             Forgot Password?
           </Link>
           <Link to="/signup" className="text-blue-600 dark:text-blue-400 hover:underline">
             Don't have an account? Sign up
           </Link>
         </div>
+        <p className="text-md text-gray-700 dark:text-gray-300">
+          Don’t have an account?{" "}
+          <Link to="/signup" className="text-blue-600 dark:text-blue-400 hover:underline">
+            Sign Up
+          </Link>
+        </p>
+      </div>
       </div>
     </div>
   );
