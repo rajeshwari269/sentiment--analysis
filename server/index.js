@@ -19,7 +19,6 @@ const contactRoutes =require("./routes/Contact")
 dotenv.config();
 const app = express();
 
-// CORS configuration - must be before other middleware
 app.use(cors({
   origin: process.env.CLIENT_URL || "http://localhost:5173", // Vite default port
   credentials: true, // Important for sessions
@@ -27,7 +26,8 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true }));
 
 // Session middleware - configure before routes
 app.use(session({

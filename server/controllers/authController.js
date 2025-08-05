@@ -4,13 +4,13 @@ const userModel = require('../models/user');
 const nodemailer = require('nodemailer');
 const axios = require('axios');
 require('dotenv').config();
-
+const uploadFile =require("../middleware/cloudinary.js")
 const signup = async (req, res) => {
   console.log("Signup request received:", req.body);
 
   try {
     const { firstname, lastname, email, password } = req.body;
-
+    let profilephoto;
     // Check if user already exists
     const existingUser = await userModel.findOne({ email });
     if (existingUser) {
@@ -20,12 +20,22 @@ const signup = async (req, res) => {
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Getting profile photo
+    const profilePhotoPath = req.file?.path;
+    if (profilePhotoPath){
+        profilephoto=await uploadFile(profilePhotoPath)
+         if(!profilephoto) return res.status(500).json({
+                message:"profile photo not uploaded successfully"
+            })
+    }
+   
     // Create new user
     const user = await userModel.create({
       firstname,
       lastname,
       email,
       password: hashedPassword,
+      profilephoto:profilephoto.secure_url
     });
 
     // Generate JWT token
@@ -45,6 +55,7 @@ const signup = async (req, res) => {
         firstname: user.firstname,
         lastname: user.lastname,
         email: user.email,
+        profilephoto
       },
     });
 
@@ -307,7 +318,59 @@ const githubCallback = async (req, res) => {
     return res.redirect(`${process.env.CLIENT_URL}/oauth-callback?error=server_error`);
   }
 };
+const userProfile=async (req,res)=>{
+   try{
+    const token=req.body.token
+    if(!token) return res.json({message:'No token found'})
+      const decoded=jwt.decode(token,process.env.Jwt_USER_SECRET)
+    console.log(decoded)
+    const user = await userModel.findById(decoded.userId);
+    if (!user) {
+      return res.status(404).json({ message: "Invalid user" });
+    }
+    console.log(user)
+    const {firstname,lastname,email,profilephoto}=user
+    return res.json({firstname,lastname,email,profilephoto})
+   }
+catch(err)
+{
+console.error("Reset Password Error:", err);
+return res.status(400).json({ message: "Invalid or expired token" });
+}
+}
 
+const updateUserProfile=async (req,res)=>{
+  console.log("reached")
+  try {
+       const {firstname,lastname,email,token}=req.body
+       const profilePhotoPath = req.file?.path;
+   if(!token) return res.json({message:'No token found'})
+      const decoded=jwt.verify(token,process.env.Jwt_USER_SECRET)
+    console.log(decoded)
+    const userId=decoded.userId
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "Invalid user" });
+    }
+    let profilephoto = user.profilephoto;
+    if (profilePhotoPath){
+        profilephoto=await uploadFile(profilePhotoPath)
+         if(!profilephoto) return res.status(500).json({
+                message:"profile photo not uploaded successfully"
+            })
+    }
+    const resp=await userModel.findByIdAndUpdate(
+      userId,
+      { firstname, lastname, email,profilephoto:profilephoto.secure_url },
+      { new: true } 
+    );
+    if(!resp) return res.json({message:"profile not updated"})
+      res.status(200).json({message:'profile updated'})
+  } catch (error) {
+    console.log(error)
+    return res.status(400).json({ message: "Invalid or expired token" });
+  }
+ 
+}
 
-
-module.exports = { signup, signin, forgotPassword, resetPassword, githubCallback };
+module.exports = { signup, signin, forgotPassword, resetPassword, githubCallback, userProfile,updateUserProfile };

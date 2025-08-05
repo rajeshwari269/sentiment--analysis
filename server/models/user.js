@@ -52,6 +52,7 @@ const userSchema = new Schema(
     // Password reset fields
     resetPasswordToken: String,
     resetPasswordExpires: Date,
+    
     // GitHub profile data (optional, for additional features)
     githubProfile: {
       username: String,
@@ -74,6 +75,9 @@ const userSchema = new Schema(
       enum: ['local', 'github'],
       default: 'local',
     },
+    profilephoto:{
+      type:String,
+    }
   },
   {
     timestamps: true,

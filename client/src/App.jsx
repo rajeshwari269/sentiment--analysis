@@ -14,7 +14,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword"; 
 import Loader from "./components/Preloader/Loader";
 import OAuthCallback from "./components/OAuthCallback";
-
+import UserProfile from "./pages/UserProfile"
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { ContactPage } from "./pages/ContactPage";
@@ -49,7 +49,7 @@ function App() {
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/oauth-callback" element={<OAuthCallback />} />
           <Route path="/auth/callback" element={<OAuthCallback />} />
-          <Route path="/auth/callback" element={<OAuthCallback />} />
+          <Route path="/user-profile" element={<UserProfile />}/>
         </Routes>
         <Footer />
       </Router>
