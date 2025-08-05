@@ -36,20 +36,16 @@ const Footer = () => {
               Transform your data into actionable insights with the power of advanced sentiment analysis and AI-driven analytics.
             </p>
             <div className="flex space-x-4">
-              <a href="https://github.com" target="_blank" rel="noopener noreferrer"
-                className="p-2 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
+              <a href="https://github.com/openml-stack/SentiLog-AI" target="_blank" rel="noopener noreferrer" 
+                 className="p-2 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
                 <Github className="h-5 w-5 text-slate-700 dark:text-slate-300" />
               </a>
-              <a href="https://x.com" target="_blank" rel="noopener noreferrer"
-                className="p-2 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
-                <SiX className="h-5 w-5 text-slate-700 dark:text-slate-300" />
-              </a>
-              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer"
-                className="p-2 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
+              <a href="https://www.linkedin.com/in/itsvivekprakash/" target="_blank" rel="noopener noreferrer"
+                 className="p-2 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
                 <Linkedin className="h-5 w-5 text-slate-700 dark:text-slate-300" />
               </a>
-              <a href="https://gmail.com" target="_blank" rel="noopener noreferrer"
-                className="p-2 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
+              <a href="mailto:vivekprakash.st@gmail.com" target="_blank" rel="noopener noreferrer" 
+                 className="p-2 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
                 <Mail className="h-5 w-5 text-slate-700 dark:text-slate-300" />
               </a>
             </div>
