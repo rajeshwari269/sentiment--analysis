@@ -2,8 +2,18 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const userModel = require('../models/user');
 const nodemailer = require('nodemailer');
+const axios = require('axios');
 require('dotenv').config();
-const uploadFile =require("../middleware/cloudinary.js")
+
+// Conditionally import Cloudinary only if environment variables are set
+let uploadFile = null;
+try {
+  if (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET) {
+    uploadFile = require("../middleware/cloudinary.js");
+  }
+} catch (error) {
+  console.warn("Cloudinary not configured - image uploads will be disabled");
+}
 const signup = async (req, res) => {
   console.log("Signup request received:", req.body);
 
@@ -21,7 +31,7 @@ const signup = async (req, res) => {
 
     // Getting profile photo
     const profilePhotoPath = req.file?.path;
-    if (profilePhotoPath){
+    if (profilePhotoPath && uploadFile){
         profilephoto=await uploadFile(profilePhotoPath)
          if(!profilephoto) return res.status(500).json({
                 message:"profile photo not uploaded successfully"
@@ -182,6 +192,151 @@ const resetPassword = async (req, res) => {
   }
 };
 
+// GitHub OAuth Callback
+const githubCallback = async (req, res) => {
+  try {
+    console.log("GitHub callback received:", req.query);
+    
+    const { code, state, error } = req.query;
+    
+    // Handle OAuth errors
+    if (error) {
+      console.error("GitHub OAuth error:", error);
+      return res.redirect(`${process.env.CLIENT_URL}/oauth-callback?error=${encodeURIComponent(error)}`);
+    }
+    
+    // Verify state parameter to prevent CSRF attacks (if session is available)
+    if (req.session && req.session.oauthState && state !== req.session.oauthState) {
+      console.error("Invalid OAuth state");
+      return res.redirect(`${process.env.CLIENT_URL}/oauth-callback?error=invalid_state`);
+    }
+    
+    if (!code) {
+      console.error("No authorization code received");
+      return res.redirect(`${process.env.CLIENT_URL}/oauth-callback?error=no_code`);
+    }
+
+    // Exchange code for access token
+    const tokenResponse = await axios.post('https://github.com/login/oauth/access_token', {
+      client_id: process.env.GITHUB_CLIENT_ID,
+      client_secret: process.env.GITHUB_CLIENT_SECRET,
+      code: code,
+      redirect_uri: process.env.GITHUB_CALLBACK_URL,
+    }, {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const { access_token, error: token_error } = tokenResponse.data;
+    
+    if (token_error || !access_token) {
+      console.error("Token exchange error:", token_error);
+      return res.redirect(`${process.env.CLIENT_URL}/oauth-callback?error=token_exchange_failed`);
+    }
+
+    // Get user info from GitHub
+    const userResponse = await axios.get('https://api.github.com/user', {
+      headers: {
+        'Authorization': `Bearer ${access_token}`,
+        'Accept': 'application/vnd.github.v3+json',
+      },
+    });
+
+    const githubUser = userResponse.data;
+    
+    // Get user's email (GitHub API might not return email in user object)
+    const emailResponse = await axios.get('https://api.github.com/user/emails', {
+      headers: {
+        'Authorization': `Bearer ${access_token}`,
+        'Accept': 'application/vnd.github.v3+json',
+      },
+    });
+    
+    const emails = emailResponse.data;
+    const primaryEmail = emails.find(email => email.primary)?.email || githubUser.email;
+    
+    if (!primaryEmail) {
+      console.error("No email found for GitHub user");
+      return res.redirect(`${process.env.CLIENT_URL}/oauth-callback?error=no_email`);
+    }
+
+    // Check if user already exists
+    let user = await userModel.findOne({
+      $or: [
+        { email: primaryEmail },
+        { githubId: githubUser.id.toString() }
+      ]
+    });
+
+    if (user) {
+      // User exists, update GitHub info if needed
+      if (!user.githubId) {
+        user.githubId = githubUser.id.toString();
+        user.accountType = user.password ? 'hybrid' : 'github';
+        user.githubProfile = {
+          username: githubUser.login,
+          avatarUrl: githubUser.avatar_url,
+          name: githubUser.name,
+          bio: githubUser.bio,
+          location: githubUser.location,
+          company: githubUser.company,
+          publicRepos: githubUser.public_repos,
+          followers: githubUser.followers,
+          following: githubUser.following,
+          profileUrl: githubUser.html_url
+        };
+        await user.save();
+      }
+    } else {
+      // Create new user
+      const names = githubUser.name ? githubUser.name.split(' ') : [githubUser.login, ''];
+      user = await userModel.create({
+        firstname: names[0] || githubUser.login,
+        lastname: names.slice(1).join(' ') || '',
+        email: primaryEmail,
+        githubId: githubUser.id.toString(),
+        accountType: 'github',
+        isEmailVerified: true, // GitHub emails are verified
+        registrationSource: 'github',
+        githubProfile: {
+          username: githubUser.login,
+          avatarUrl: githubUser.avatar_url,
+          name: githubUser.name,
+          bio: githubUser.bio,
+          location: githubUser.location,
+          company: githubUser.company,
+          publicRepos: githubUser.public_repos,
+          followers: githubUser.followers,
+          following: githubUser.following,
+          profileUrl: githubUser.html_url
+        }
+      });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { userId: user._id, email: user.email },
+      process.env.Jwt_USER_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    console.log("GitHub OAuth successful for user:", user.email);
+    
+    // Clear the OAuth state from session if it exists
+    if (req.session && req.session.oauthState) {
+      delete req.session.oauthState;
+    }
+    
+    // Redirect to frontend OAuth callback page with token
+    return res.redirect(`${process.env.CLIENT_URL}/oauth-callback?code=${code}&state=${state}&token=${token}`);
+
+  } catch (error) {
+    console.error("GitHub OAuth callback error:", error);
+    return res.redirect(`${process.env.CLIENT_URL}/oauth-callback?error=server_error`);
+  }
+};
 
 const deleteAccount = async (req, res) => {
   try {
@@ -198,6 +353,7 @@ const deleteAccount = async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
+
 
 const userProfile=async (req,res)=>{
    try{
@@ -234,7 +390,7 @@ const updateUserProfile=async (req,res)=>{
       return res.status(404).json({ message: "Invalid user" });
     }
     let profilephoto = user.profilephoto;
-    if (profilePhotoPath){
+    if (profilePhotoPath && uploadFile){
         profilephoto=await uploadFile(profilePhotoPath)
          if(!profilephoto) return res.status(500).json({
                 message:"profile photo not uploaded successfully"
@@ -254,5 +410,5 @@ const updateUserProfile=async (req,res)=>{
  
 }
 
-module.exports = { signup, signin, forgotPassword, resetPassword, userProfile,updateUserProfile,deleteAccount  };
+module.exports = { signup, signin, forgotPassword, resetPassword, userProfile,updateUserProfile,deleteAccount, githubCallback  };
 
