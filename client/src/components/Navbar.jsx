@@ -241,6 +241,12 @@ const Navbar = () => {
                   >
                     Reset Password
                   </NavLink>
+                  <NavLink
+              to="/user-profile"
+              className='px-4 py-2 text-white rounded-xl bg-sky-400 hover:text-white transition hover:bg-sky-700' 
+              >
+                User Profile
+              </NavLink>
                   <button
                     onClick={() => setShowDeleteModal(true)}
                     className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:text-red-800 dark:hover:text-red-400 bg-transparent"
