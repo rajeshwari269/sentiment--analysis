@@ -174,7 +174,7 @@ const Navbar = () => {
       }}
     >
       {/* Logo wrapped in Link*/}
-      <NavLink to="/" className = "flex items-center">
+      <NavLink to="/" className = "flex items-center" onClick={() => window.scrollTo(0,0)}>
         <Logo theme={theme} currentColors={currentColors} />
       </NavLink>
       
