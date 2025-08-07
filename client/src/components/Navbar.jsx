@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect,useRef } from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { ThemeContext } from "../context/ThemeContext";
 import ThemeToggle from "./ThemeToggle";
@@ -39,7 +39,18 @@ const Navbar = () => {
   const [registered, setRegistered] = useState(
     localStorage.getItem("registered") === "1"
   );
-
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const profileRef = useRef(null);
+  const [user, setUser] = useState(() => {
+    try {
+      const saved = localStorage.getItem("user");
+      return saved ? JSON.parse(saved) : null;
+    } catch (e) {
+      return null;
+    }
+  });
+  console.log(user);
   const isAuthPage = ["/login", "/signup"].includes(location.pathname);
 
   const themeColors = {
@@ -105,6 +116,20 @@ const Navbar = () => {
     setRegistered(localStorage.getItem("registered") === "1");
   }, [location]);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setProfileOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("registered");
@@ -112,6 +137,33 @@ const Navbar = () => {
     setRegistered(false);
     navigate("/");
   };
+  const handleDeleteAccount = async () => {// for
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/delete-account`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res.ok) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("registered");
+        setToken(null);
+        setRegistered(false);
+        setShowDeleteModal(false);
+        navigate("/signup");
+        alert("Your account has been deleted successfully.");
+      } else {
+        alert("Failed to delete account.");
+      }
+    } catch (error) {
+      console.error("Error deleting account:", error);
+      alert("An error occurred.");
+    }
+  };
+
 
   return (
     <nav
@@ -165,20 +217,49 @@ const Navbar = () => {
             </NavLink>
           )}
           {token && (
-            <>
-              <NavLink
-                to="/forgot-password"
-                className="px-4 py-2 text-green-600 border border-green-600 rounded hover:bg-green-50 transition"
-              >
-                Reset Password
-              </NavLink>
+            <div className="relative" ref={profileRef}>
               <button
-                onClick={logout}
-                className="px-4 py-2 text-red-600 border border-red-600 rounded hover:bg-red-50 transition"
+                onClick={() => setProfileOpen((prev) => !prev)}
+                className="flex items-center gap-2 px-3 py-2 border rounded border-gray-400 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-sm font-medium text-gray-800 dark:text-white bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600"
               >
-                Logout
+                <div className="w-8 h-8 flex items-center justify-center rounded-full bg-blue-300 text-white font-bold uppercase">
+                  {user?.firstname?.[0] || user?.email?.[0] || 'U'}
+                </div>
+                <span>My Profile ▾</span>
               </button>
-            </>
+
+              {profileOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-50">
+                  <NavLink
+                    to="/forgot-password"
+                    className="block px-4 py-2 text-sm text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900 hover:text-white rounded"
+                  >
+                    Reset Password
+                  </NavLink>
+                  <NavLink
+              to="/user-profile"
+              className='px-4 py-2 text-white rounded-xl bg-sky-400 hover:text-white transition hover:bg-sky-700' 
+              >
+                User Profile
+              </NavLink>
+                  <button
+                    onClick={() => setShowDeleteModal(true)}
+                    className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:text-red-800 dark:hover:text-red-400 bg-transparent"
+                  >
+                    Delete Account
+                  </button>
+                  <button
+                    onClick={() => {
+                      logout();
+                      setProfileOpen(false);
+                    }}
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-white bg-transparent"
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
           )}
         </div>
       </div>
@@ -255,6 +336,30 @@ const Navbar = () => {
             </button>
           )}
         </motion.div>
+      )}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-96">
+            <h2 className="text-lg font-bold text-red-600 mb-4">Delete Account</h2>
+            <p className="text-sm text-gray-700 dark:text-gray-300 mb-6">
+              Are you sure you want to delete your account? This action is irreversible.
+            </p>
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="px-4 py-2 rounded border text-gray-700 dark:text-gray-300"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteAccount}
+                className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </nav>
   );
