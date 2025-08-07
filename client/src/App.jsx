@@ -11,7 +11,7 @@ import OAuthCallback from "./components/OAuthCallback";
 import About from "./components/About";
 
 import AnalyzePage from "./pages/AnalyzePage";
-import ContactPage from "./pages/ContactPage";
+import {ContactPage} from "./pages/ContactPage";
 import Dashboard from "./pages/Dashboard";
 import ForgotPassword from "./pages/ForgotPassword";
 import HomePage from "./pages/HomePage";
