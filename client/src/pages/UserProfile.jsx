@@ -112,74 +112,95 @@ function UserProfile() {
         <div className="absolute bottom-1/3 right-1/4 w-60 h-60 bg-gradient-to-br from-teal-200 to-blue-200 rounded-full opacity-10 blur-[90px]" />
       </div>
 
-      <form
-        onSubmit={handleSubmit}
-        encType="multipart/form-data"
-        className="bg-gradient-to-br from-blue-200/50 via-purple-100/40 to-pink-200/50 backdrop-blur-xl p-10 md:p-16 shadow-xl border border-white/20 rounded-3xl w-full max-w-5xl z-10"
+<div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-lg p-8">
+  {/* Title */}
+  <h2 className="text-xl font-semibold text-gray-800 mb-6">Edit Profile</h2>
+
+  {/* Upload photo */}
+  <div className="flex flex-col items-center mb-6">
+    <label htmlFor="profileUpload" className="relative cursor-pointer group">
+      <div className="w-28 h-28 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden border border-gray-300 group-hover:opacity-80 transition-all">
+        {previewPhoto || profilePhoto ? (
+          <img
+            src={previewPhoto || profilePhoto}
+            alt="Profile Preview"
+            className="object-cover w-full h-full"
+          />
+        ) : (
+          <span className="text-sm text-gray-500">Upload</span>
+        )}
+      </div>
+      <input
+        type="file"
+        id="profileUpload"
+        accept="image/jpeg, image/png"
+        onChange={handlePhotoChange}
+        className="hidden"
+      />
+    </label>
+
+    <button
+      type="button"
+      className="mt-4 px-4 py-2 rounded-lg bg-purple-500 hover:bg-purple-600 text-white text-sm shadow"
+    >
+      Change Profile Picture
+    </button>
+  </div>
+
+  {/* Info inputs */}
+  <div className="space-y-4">
+    <input
+      type="text"
+      placeholder="First Name"
+      className="w-full rounded-md border border-gray-300 px-4 py-2 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400"
+      value={firstname}
+      onChange={(e) => setFirstName(e.target.value)}
+    />
+    <input
+      type="text"
+      placeholder="Last Name"
+      className="w-full rounded-md border border-gray-300 px-4 py-2 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400"
+      value={lastname}
+      onChange={(e) => setFirstName(e.target.value)}
+    />
+
+    <input
+      type="email"
+      placeholder="Email Address"
+      className="w-full rounded-md border border-gray-300 px-4 py-2 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400"
+      value={email}
+      onChange={(e) => setEmail(e.target.value)}
+    />
+  </div>
+
+  {/* Change Password */}
+  <div className="mt-6">
+    <label className="block text-sm font-medium text-gray-700 mb-1">
+      Change Password
+    </label>
+    <div className="flex items-center">
+      <input
+        type="password"
+        className="w-full rounded-md border border-gray-300 px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        placeholder="••••••••"
+      />
+      <button
+        type="button"
+        className="ml-2 p-2 bg-gray-300 hover:bg-gray-500 rounded-md"
       >
-        <h2 className="text-3xl font-bold text-center text-purple-700 mb-10">Update Profile</h2>
-        <div className="flex flex-col md:flex-row gap-8 items-center">
-          {/* Upload photo */}
-          <label htmlFor="profileUpload" className="relative cursor-pointer group">
-            <div className="w-32 h-32 rounded-full bg-blue-300 text-white text-sm flex items-center justify-center overflow-hidden border-4 border-white shadow-lg group-hover:opacity-80 transition-all">
-              {previewPhoto || profilePhoto ? (
-                <img
-                  src={previewPhoto || profilePhoto}
-                  alt="Profile Preview"
-                  className="object-cover w-full h-full"
-                />
-              ) : (
-                <span className="text-xs text-center px-2">Upload Photo</span>
-              )}
-            </div>
-            <input
-              type="file"
-              id="profileUpload"
-              accept="image/jpeg, image/png"
-              onChange={handlePhotoChange}
-              className="hidden"
-            />
-          </label>
+        ➜
+      </button>
+    </div>
+  </div>
 
-          {/* Info inputs */}
-          <div className="flex flex-col gap-4 w-full">
-            <div className="flex flex-col sm:flex-row gap-4 w-full">
-              <input
-                type="text"
-                placeholder="First Name"
-                className="rounded-xl text-black text-center w-full py-2 px-4 shadow-md bg-white/80"
-                value={firstname}
-                onChange={(e) => setFirstName(e.target.value)}
-              />
-              <input
-                type="text"
-                placeholder="Last Name"
-                className="rounded-xl text-black text-center w-full py-2 px-4 shadow-md bg-white/80"
-                value={lastname}
-                onChange={(e) => setLastName(e.target.value)}
-              />
-            </div>
-            <input
-              type="email"
-              placeholder="Email"
-              className="rounded-xl text-black text-center py-2 px-4 shadow-md bg-white/80 w-full"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-        </div>
-
-        {/* Confirm button */}
-<div className="mt-10 flex justify-center">
+  {/* Save button */}
   <button
-    type="submit"
-    className="px-10 py-4 text-lg bg-purple-600 hover:bg-purple-700 text-white rounded-xl shadow-lg transition-all duration-300"
+    type="button"
+    className="mt-8 w-full px-6 py-3 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-lg shadow hover:opacity-90 transition"
   >
-     Confirm Changes
+    Save Changes
   </button>
-</div>
-
-{/* Divider */}
+  {/* Divider */}
 <div className="my-10 border-t-2 border-dashed border-purple-300" />
 
 {/* Delete Account Section */}
@@ -204,36 +225,37 @@ function UserProfile() {
     This action is <strong>irreversible</strong>. Once deleted, your data cannot be recovered.
   </p>
   <div className="flex justify-center">
-    <Button setShowDeleteModal={setShowDeleteModal}/>
+    <Button setShowDeleteModal={setShowDeleteModal} />
   </div>
 </div>
+</div>
 
-      </form>
+{/* Modal */}
+{showDeleteModal && (
+  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+    <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-96">
+      <h2 className="text-lg font-bold text-red-600 mb-4">Delete Account</h2>
+      <p className="text-sm text-gray-700 dark:text-gray-300 mb-6">
+        Are you sure you want to delete your account? This action is irreversible.
+      </p>
+      <div className="flex justify-end gap-4">
+        <button
+          onClick={() => setShowDeleteModal(false)}
+          className="px-4 py-2 rounded border text-gray-700 dark:text-gray-300"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={handleDeleteAccount}
+          className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
-      {showDeleteModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-96">
-            <h2 className="text-lg font-bold text-red-600 mb-4">Delete Account</h2>
-            <p className="text-sm text-gray-700 dark:text-gray-300 mb-6">
-              Are you sure you want to delete your account? This action is irreversible.
-            </p>
-            <div className="flex justify-end gap-4">
-              <button
-                onClick={() => setShowDeleteModal(false)}
-                className="px-4 py-2 rounded border text-gray-700 dark:text-gray-300"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDeleteAccount}
-                className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
