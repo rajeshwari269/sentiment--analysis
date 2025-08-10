@@ -7,13 +7,20 @@ import api from "../axios";
 import QuillEditor from "../components/ReactQuill";
 import toast, { Toaster } from "react-hot-toast";
 import { ThemeContext } from "../context/ThemeContext";
+import { useNavigate } from "react-router-dom";
 
 const JournalPage = () => {
   const { theme } = useContext(ThemeContext);
+  const navigate = useNavigate();
   const [text, setText] = useState("");
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  // Check authentication
+  const isAuthenticated = () => {
+    return localStorage.getItem('token') !== null;
+  };
 
   useEffect(() => {
     import('aos').then(AOS => {
@@ -27,16 +34,44 @@ const JournalPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Check authentication before proceeding
+    if (!isAuthenticated()) {
+      toast.error("Please login to write your journal or log mood", {
+        duration: 4000,
+        position: 'top-center',
+      });
+      
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
+      return;
+    }
+
     setLoading(true);
     setError(null);
     setResult(null);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    toast.success("Journal added successfully!");
+    
     try {
-      const res = await api.post("/api/analyze", { text });
+      const token = localStorage.getItem('token');
+      const res = await api.post("/api/journal", { text }, {
+        headers: {
+          'token': token
+        }
+      });
+      
       setResult(res.data);
+      toast.success("Journal added successfully!");
     } catch (err) {
-      setError("Failed to analyze sentiment");
+      if (err.response?.status === 401) {
+        toast.error("Please login to write your journal or log mood");
+        setTimeout(() => {
+          navigate('/login');
+        }, 2000);
+      } else {
+        setError("Failed to analyze sentiment");
+        toast.error("Failed to save journal entry");
+      }
     } finally {
       setLoading(false);
     }
@@ -84,6 +119,17 @@ const JournalPage = () => {
                 sentiment and emotions in your writing to help you understand
                 yourself better.
               </p>
+              {!isAuthenticated() && (
+                <div className={`mt-4 p-4 rounded-lg border ${
+                  theme === 'dark' 
+                    ? 'bg-yellow-900/20 border-yellow-600/50 text-yellow-300'
+                    : 'bg-yellow-50 border-yellow-200 text-yellow-800'
+                }`}>
+                  <p className="font-medium">
+                    🔒 Please login to start writing your journal entries
+                  </p>
+                </div>
+              )}
             </div>
           </section>
 
@@ -182,7 +228,7 @@ const JournalPage = () => {
                                 d="M13 10V3L4 14h7v7l9-11h-7z"
                               />
                             </svg>
-                            Add Journal
+                            {isAuthenticated() ? 'Add Journal' : 'Login Required'}
                           </>
                         )}
                       </span>
@@ -191,7 +237,7 @@ const JournalPage = () => {
                 </form>
                 
                 <Toaster 
-                  position="top-right" 
+                  position="top-center" 
                   reverseOrder={false}
                   toastOptions={{
                     style: {
@@ -278,32 +324,14 @@ const JournalPage = () => {
                             result.sentiment?.slice(1)}
                         </div>
 
-                        {/* Emotion Result */}
-                        {result.emotion && (
-                          <div className="inline-flex items-center px-6 py-3 rounded-full font-semibold bg-gradient-to-r from-purple-400 to-pink-400 text-white shadow-lg transform hover:scale-105 transition-all duration-300">
-                            <svg
-                              className="w-4 h-4 mr-2"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                            Emotion:{" "}
-                            {result.emotion?.charAt(0).toUpperCase() +
-                              result.emotion?.slice(1)}
-                          </div>
-                        )}
+                      
                       </div>
 
                       {/* Original SentimentCard */}
                       <div className="mt-6 flex items-center justify-center">
                         <SentimentCard
                           sentiment={result.sentiment}
-                          emotion={result.emotion}
+                          
                         />
                       </div>
                     </div>

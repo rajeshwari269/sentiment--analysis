@@ -11,7 +11,8 @@ node_modules
 dist
 dist-ssr
 *.local
-
+client/.env
+server/.env
 venv/
 __pycache__/
 
@@ -25,3 +26,20 @@ __pycache__/
 *.njsproj
 *.sln
 *.sw?
+
+# Environment files
+client/.env
+server/.env
+.env
+.env.local
+.env.production
+.env.staging
+
+# Dependencies
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Build outputs
+client/dist/
+server/dist/
