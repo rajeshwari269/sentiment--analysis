@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useRef } from "react";
 import Navbar from "../components/Navbar.jsx";
 import axios from "axios";
 import Button from "../components/Button.jsx"
+import { useUser } from '../context/UserContext';
 
 function UserProfile() {
   const [firstname, setFirstName] = useState("");
@@ -11,6 +12,9 @@ function UserProfile() {
   const [previewPhoto, setPreviewPhoto] = useState(null);
   const [profilePhotoFile, setProfilePhotoFile] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const fileInputRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const { updateUser } = useUser();
 
   useEffect(() => {
     async function getDetails() {
@@ -48,6 +52,7 @@ function UserProfile() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       const token = localStorage.getItem("token");
       const formData = new FormData();
@@ -72,10 +77,14 @@ function UserProfile() {
 
       if (response.status === 200) {
         alert("Profile updated successfully");
+        updateUser(response.data.user); 
       }
     } catch (error) {
       console.error("Profile update failed:", error);
-    }
+      alert(`Profile update failed: ${error.message}. Please check the console for details.`);
+    }finally {
+    setIsLoading(false);
+  }
   };
 
   const handleDeleteAccount = async () => {
@@ -136,18 +145,21 @@ function UserProfile() {
         accept="image/jpeg, image/png"
         onChange={handlePhotoChange}
         className="hidden"
+        ref={fileInputRef}
       />
     </label>
 
     <button
       type="button"
       className="mt-4 px-4 py-2 rounded-lg bg-purple-500 hover:bg-purple-600 text-white text-sm shadow"
+      onClick={() => fileInputRef.current.click()}
     >
       Change Profile Picture
     </button>
   </div>
 
   {/* Info inputs */}
+  <form onSubmit={handleSubmit}>
   <div className="space-y-4">
     <input
       type="text"
@@ -161,7 +173,7 @@ function UserProfile() {
       placeholder="Last Name"
       className="w-full rounded-md border border-gray-300 px-4 py-2 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400"
       value={lastname}
-      onChange={(e) => setFirstName(e.target.value)}
+      onChange={(e) => setLastName(e.target.value)}
     />
 
     <input
@@ -195,11 +207,13 @@ function UserProfile() {
 
   {/* Save button */}
   <button
-    type="button"
+    type="submit"
     className="mt-8 w-full px-6 py-3 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-lg shadow hover:opacity-90 transition"
+    disabled={isLoading}
   >
-    Save Changes
+    {isLoading ? 'Saving...' : 'Save Changes'}
   </button>
+  </form>
   {/* Divider */}
 <div className="my-10 border-t-2 border-dashed border-purple-300" />
 

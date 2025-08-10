@@ -3,6 +3,7 @@ import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { ThemeContext } from "../context/ThemeContext";
 import ThemeToggle from "./ThemeToggle";
 import { motion } from "framer-motion";
+import { useUser } from '../context/UserContext';
 
 const navLinks = [
   { to: "/", label: "Home" },
@@ -29,6 +30,7 @@ const Logo = ({ theme, currentColors }) => (
 );
 
 const Navbar = () => {
+  const { user, loading, setUser: setGlobalUser } = useUser();
   const [open, setOpen] = useState(false);
   const { theme } = useContext(ThemeContext);
   const [currentColors, setCurrentColors] = useState({});
@@ -42,14 +44,7 @@ const Navbar = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef(null);
-  const [user, setUser] = useState(() => {
-    try {
-      const saved = localStorage.getItem("user");
-      return saved ? JSON.parse(saved) : null;
-    } catch (e) {
-      return null;
-    }
-  });
+  
   console.log(user);
   const isAuthPage = ["/login", "/signup"].includes(location.pathname);
 
@@ -222,8 +217,18 @@ const Navbar = () => {
                 onClick={() => setProfileOpen((prev) => !prev)}
                 className="flex items-center gap-2 px-3 py-2 border rounded border-gray-400 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 text-sm font-medium text-gray-800 dark:text-white bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600"
               >
-                <div className="w-8 h-8 flex items-center justify-center rounded-full bg-blue-400 text-white font-bold uppercase shadow-md">
-                  {user?.firstname?.[0] || user?.email?.[0] || 'U'}
+                <div className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-200 text-white font-bold uppercase shadow-md overflow-hidden">
+                  {/* This entire block is the corrected logic for Step 3 */}
+                  {!loading && user?.profilephoto ? (
+                    <img
+                      src={user.profilephoto}
+                      alt="User Avatar"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    // Fallback to initials if no photo or still loading
+                    <span>{user?.firstname?.[0]}</span>
+                  )}
                 </div>
                 <span>My Profile ▾</span>
               </button>
