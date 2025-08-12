@@ -23,6 +23,7 @@
     "react-icons": "^5.5.0",
     "react-quill-new": "^3.4.6",
     "react-router-dom": "^6.23.0",
+    "styled-components": "^6.1.19",
     "vite": "^4.5.14"
   },
   "devDependencies": {

@@ -142,13 +142,10 @@ function LoginPage() {
             )}
           </button>
         </form>
-        <div className="mt-4 flex flex-col gap-2 items-center">
-        <div className="w-full text-right">
+        <div className="mt-6 flex flex-col gap-2 items-center">
+        <div className="w-full flex justify-center mt-2">
           <Link to="/forgot-password" className="text-blue-600 dark:text-blue-400 hover:underline text-sm">
             Forgot Password?
-          </Link>
-          <Link to="/signup" className="text-blue-600 dark:text-blue-400 hover:underline">
-            Don't have an account? Sign up
           </Link>
         </div>
         <p className="text-md text-gray-700 dark:text-gray-300">
