@@ -1,6 +1,6 @@
 import { Github, Heart, Linkedin, Mail, Shield, TrendingUp, Zap } from "lucide-react";
 import { useContext, useEffect } from "react";
-import { SiX } from "react-icons/si";
+// import { SiX } from "react-icons/si";
 import { Link } from "react-router-dom";
 import { ThemeContext } from "../context/ThemeContext";
 
@@ -40,8 +40,17 @@ const Footer = () => {
                  className="p-2 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
                 <Github className="h-5 w-5 text-slate-700 dark:text-slate-300" />
               </a>
+<<<<<<< HEAD
               <a href="https://www.linkedin.com/in/itsvivekprakash/" target="_blank" rel="noopener noreferrer"
                  className="p-2 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
+=======
+              <a href="https://x.com" target="_blank" rel="noopener noreferrer"
+                className="p-2 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
+                {/* <SiX className="h-5 w-5 text-slate-700 dark:text-slate-300" /> */}
+              </a>
+              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer"
+                className="p-2 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
+>>>>>>> 94c1975 (About section Fixed)
                 <Linkedin className="h-5 w-5 text-slate-700 dark:text-slate-300" />
               </a>
               <a href="mailto:vivekprakash.st@gmail.com" target="_blank" rel="noopener noreferrer" 
