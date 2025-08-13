@@ -14,6 +14,7 @@ try {
 } catch (error) {
   console.warn("Cloudinary not configured - image uploads will be disabled");
 }
+
 const signup = async (req, res) => {
   console.log("Signup request received:", req.body);
 
@@ -32,7 +33,7 @@ const signup = async (req, res) => {
     // Getting profile photo
     const profilePhotoPath = req.file?.path;
     if (profilePhotoPath && uploadFile){
-        profilephoto=await uploadFile(profilePhotoPath)
+        profilephoto = await uploadFile(profilePhotoPath)
          if(!profilephoto) return res.status(500).json({
                 message:"profile photo not uploaded successfully"
             })
@@ -44,14 +45,14 @@ const signup = async (req, res) => {
       lastname,
       email,
       password: hashedPassword,
-      profilephoto:profilephoto.secure_url
+      profilephoto: profilephoto?.secure_url
     });
 
     // Generate JWT token
     const token = jwt.sign(
       { userId: user._id, email: user.email },
       process.env.JWT_USER_SECRET,
-      { expiresIn: '1h' }
+      { expiresIn: '7d' }
     );
 
     console.log("User created successfully:", user.email);
@@ -64,7 +65,7 @@ const signup = async (req, res) => {
         firstname: user.firstname,
         lastname: user.lastname,
         email: user.email,
-        profilephoto
+        profilephoto: profilephoto?.secure_url
       },
     });
 
@@ -95,8 +96,8 @@ const signin = async (req, res) => {
     // Generate JWT token
     const token = jwt.sign(
       { userId: user._id, email: user.email },
-      process.env.Jwt_USER_SECRET,
-      { expiresIn: '1h' }
+      process.env.JWT_USER_SECRET,
+      { expiresIn: '7d' }
     );
 
     console.log("User authenticated:", user.email);
@@ -108,17 +109,16 @@ const signin = async (req, res) => {
         id: user._id,
         firstname: user.firstname,
         lastname: user.lastname,
-        email: user.email
+        email: user.email,
+        profilephoto: user.profilephoto
       }
     });
-
 
   } catch (e) {
     console.error("Signin error:", e);
     return res.status(500).json({ message: "internal error" });
   }
 };
-
 
 // Forgot Password
 const forgotPassword = async (req, res) => {
@@ -139,7 +139,7 @@ const forgotPassword = async (req, res) => {
     const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
 
     // Send reset email
-    const transporter = nodemailer.createTransport({
+    const transporter = nodemailer.createTransporter({
       service: 'gmail',
       auth: {
         user: process.env.EMAIL_USER,
@@ -167,9 +167,7 @@ const forgotPassword = async (req, res) => {
   }
 };
 
-
 // Reset Password
-
 const resetPassword = async (req, res) => {
   const { token, newPassword } = req.body;
 
@@ -192,7 +190,115 @@ const resetPassword = async (req, res) => {
   }
 };
 
-// GitHub OAuth Callback
+// Google OAuth Callback Handler
+const googleCallback = async (req, res) => {
+  try {
+    const { code, state } = req.query;
+    
+    console.log("Google OAuth callback received:", { code: !!code, state });
+
+    if (!code) {
+      console.error("No authorization code received from Google");
+      return res.redirect(`${process.env.CLIENT_URL}/auth/callback?error=no_code`);
+    }
+
+    // Exchange authorization code for access token
+    console.log("Exchanging code for access token...");
+    const tokenResponse = await axios.post('https://oauth2.googleapis.com/token', {
+      client_id: process.env.GOOGLE_CLIENT_ID,
+      client_secret: process.env.GOOGLE_CLIENT_SECRET,
+      code: code,
+      grant_type: 'authorization_code',
+      redirect_uri: process.env.GOOGLE_CALLBACK_URL
+    });
+
+    const { access_token, id_token } = tokenResponse.data;
+    console.log("Token exchange successful:", { access_token: !!access_token });
+
+    if (!access_token) {
+      console.error("No access token received from Google");
+      return res.redirect(`${process.env.CLIENT_URL}/auth/callback?error=no_access_token`);
+    }
+
+    // Get user information from Google
+    console.log("Fetching user info from Google...");
+    const userResponse = await axios.get(`https://www.googleapis.com/oauth2/v2/userinfo?access_token=${access_token}`);
+    const userData = userResponse.data;
+    
+    console.log("User data received:", { id: userData.id, email: userData.email, name: userData.name });
+
+    // Check if user already exists
+    let user = await userModel.findOne({
+      $or: [
+        { email: userData.email },
+        { googleId: userData.id.toString() }
+      ]
+    });
+
+    if (user) {
+      // User exists, update Google info if needed
+      if (!user.googleId) {
+        user.googleId = userData.id.toString();
+        user.accountType = user.password ? 'hybrid' : 'google';
+        user.googleProfile = {
+          name: userData.name,
+          picture: userData.picture,
+          verifiedEmail: userData.verified_email
+        };
+        await user.save();
+      }
+    } else {
+      // Create new user
+      const names = userData.name ? userData.name.split(' ') : ['User', ''];
+      user = await userModel.create({
+        firstname: names[0] || 'User',
+        lastname: names.slice(1).join(' ') || '',
+        email: userData.email,
+        googleId: userData.id.toString(),
+        accountType: 'google',
+        isEmailVerified: userData.verified_email,
+        registrationSource: 'google',
+        profilephoto: userData.picture,
+        googleProfile: {
+          name: userData.name,
+          picture: userData.picture,
+          verifiedEmail: userData.verified_email
+        }
+      });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { userId: user._id, email: user.email },
+      process.env.JWT_USER_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    console.log("Google OAuth successful for user:", user.email);
+    
+    // Encode user data for URL transmission
+    const userB64 = Buffer.from(JSON.stringify({
+      id: user._id,
+      firstname: user.firstname,
+      lastname: user.lastname,
+      email: user.email,
+      profilephoto: user.profilephoto || userData.picture,
+      provider: 'google'
+    })).toString('base64');
+    
+    // Redirect back to frontend with token and user data
+    const redirectUrl = `${process.env.CLIENT_URL}/auth/callback?token=${token}&user=${userB64}&provider=google`;
+    console.log("Redirecting to frontend with token");
+    
+    res.redirect(redirectUrl);
+
+  } catch (error) {
+    console.error('Google OAuth error:', error.response?.data || error.message);
+    res.redirect(`${process.env.CLIENT_URL}/auth/callback?error=google_oauth_failed`);
+  }
+};
+
+// GitHub OAuth Callback (existing)
 const githubCallback = async (req, res) => {
   try {
     console.log("GitHub callback received:", req.query);
@@ -202,18 +308,18 @@ const githubCallback = async (req, res) => {
     // Handle OAuth errors
     if (error) {
       console.error("GitHub OAuth error:", error);
-      return res.redirect(`${process.env.CLIENT_URL}/oauth-callback?error=${encodeURIComponent(error)}`);
+      return res.redirect(`${process.env.CLIENT_URL}/auth/callback?error=${encodeURIComponent(error)}`);
     }
     
     // Verify state parameter to prevent CSRF attacks (if session is available)
     if (req.session && req.session.oauthState && state !== req.session.oauthState) {
       console.error("Invalid OAuth state");
-      return res.redirect(`${process.env.CLIENT_URL}/oauth-callback?error=invalid_state`);
+      return res.redirect(`${process.env.CLIENT_URL}/auth/callback?error=invalid_state`);
     }
     
     if (!code) {
       console.error("No authorization code received");
-      return res.redirect(`${process.env.CLIENT_URL}/oauth-callback?error=no_code`);
+      return res.redirect(`${process.env.CLIENT_URL}/auth/callback?error=no_code`);
     }
 
     // Exchange code for access token
@@ -233,7 +339,7 @@ const githubCallback = async (req, res) => {
     
     if (token_error || !access_token) {
       console.error("Token exchange error:", token_error);
-      return res.redirect(`${process.env.CLIENT_URL}/oauth-callback?error=token_exchange_failed`);
+      return res.redirect(`${process.env.CLIENT_URL}/auth/callback?error=token_exchange_failed`);
     }
 
     // Get user info from GitHub
@@ -259,7 +365,7 @@ const githubCallback = async (req, res) => {
     
     if (!primaryEmail) {
       console.error("No email found for GitHub user");
-      return res.redirect(`${process.env.CLIENT_URL}/oauth-callback?error=no_email`);
+      return res.redirect(`${process.env.CLIENT_URL}/auth/callback?error=no_email`);
     }
 
     // Check if user already exists
@@ -300,6 +406,7 @@ const githubCallback = async (req, res) => {
         accountType: 'github',
         isEmailVerified: true, // GitHub emails are verified
         registrationSource: 'github',
+        profilephoto: githubUser.avatar_url,
         githubProfile: {
           username: githubUser.login,
           avatarUrl: githubUser.avatar_url,
@@ -318,8 +425,8 @@ const githubCallback = async (req, res) => {
     // Generate JWT token
     const token = jwt.sign(
       { userId: user._id, email: user.email },
-      process.env.Jwt_USER_SECRET,
-      { expiresIn: '1h' }
+      process.env.JWT_USER_SECRET,
+      { expiresIn: '7d' }
     );
 
     console.log("GitHub OAuth successful for user:", user.email);
@@ -329,12 +436,22 @@ const githubCallback = async (req, res) => {
       delete req.session.oauthState;
     }
     
+    // Encode user data for URL transmission
+    const userB64 = Buffer.from(JSON.stringify({
+      id: user._id,
+      firstname: user.firstname,
+      lastname: user.lastname,
+      email: user.email,
+      profilephoto: user.profilephoto,
+      provider: 'github'
+    })).toString('base64');
+    
     // Redirect to frontend OAuth callback page with token
-    return res.redirect(`${process.env.CLIENT_URL}/oauth-callback?code=${code}&state=${state}&token=${token}`);
+    return res.redirect(`${process.env.CLIENT_URL}/auth/callback?token=${token}&user=${userB64}&provider=github`);
 
   } catch (error) {
     console.error("GitHub OAuth callback error:", error);
-    return res.redirect(`${process.env.CLIENT_URL}/oauth-callback?error=server_error`);
+    return res.redirect(`${process.env.CLIENT_URL}/auth/callback?error=server_error`);
   }
 };
 
@@ -354,51 +471,50 @@ const deleteAccount = async (req, res) => {
   }
 };
 
-
-const userProfile=async (req,res)=>{
+const userProfile = async (req, res) => {
    try{
-    const token=req.body.token
+    const token = req.body.token
     if(!token) return res.json({message:'No token found'})
-      const decoded=jwt.decode(token,process.env.Jwt_USER_SECRET)
+      const decoded = jwt.verify(token, process.env.JWT_USER_SECRET)
     console.log(decoded)
     const user = await userModel.findById(decoded.userId);
     if (!user) {
       return res.status(404).json({ message: "Invalid user" });
     }
     console.log(user)
-    const {firstname,lastname,email,profilephoto}=user
-    return res.json({firstname,lastname,email,profilephoto})
+    const {firstname, lastname, email, profilephoto} = user
+    return res.json({firstname, lastname, email, profilephoto})
    }
 catch(err)
 {
-console.error("Reset Password Error:", err);
+console.error("User Profile Error:", err);
 return res.status(400).json({ message: "Invalid or expired token" });
 }
 }
 
-const updateUserProfile=async (req,res)=>{
+const updateUserProfile = async (req, res) => {
   console.log("reached")
   try {
-       const {firstname,lastname,email,token}=req.body
+       const {firstname, lastname, email, token} = req.body
        const profilePhotoPath = req.file?.path;
    if(!token) return res.json({message:'No token found'})
-      const decoded=jwt.verify(token,process.env.Jwt_USER_SECRET)
+      const decoded = jwt.verify(token, process.env.JWT_USER_SECRET)
     console.log(decoded)
-    const userId=decoded.userId
+    const userId = decoded.userId
     const user = await userModel.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "Invalid user" });
     }
     let profilephoto = user.profilephoto;
     if (profilePhotoPath && uploadFile){
-        profilephoto=await uploadFile(profilePhotoPath)
+        profilephoto = await uploadFile(profilePhotoPath)
          if(!profilephoto) return res.status(500).json({
                 message:"profile photo not uploaded successfully"
             })
     }
-    const resp=await userModel.findByIdAndUpdate(
+    const resp = await userModel.findByIdAndUpdate(
       userId,
-      { firstname, lastname, email,profilephoto:profilephoto.secure_url },
+      { firstname, lastname, email, profilephoto: profilephoto?.secure_url || profilephoto },
       { new: true } 
     );
     if(!resp) return res.json({message:"profile not updated"})
@@ -407,8 +523,16 @@ const updateUserProfile=async (req,res)=>{
     console.log(error)
     return res.status(400).json({ message: "Invalid or expired token" });
   }
- 
 }
 
-module.exports = { signup, signin, forgotPassword, resetPassword, userProfile,updateUserProfile,deleteAccount, githubCallback  };
-
+module.exports = { 
+  signup, 
+  signin, 
+  forgotPassword, 
+  resetPassword, 
+  userProfile, 
+  updateUserProfile, 
+  deleteAccount, 
+  githubCallback, 
+  googleCallback 
+};
