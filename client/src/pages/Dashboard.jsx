@@ -9,14 +9,11 @@ import RecentActivity from '../components/dashboard/RecentActivity';
 import TotalEntries from '../components/dashboard/TotalEntries';
 
 const Dashboard = () => {
-  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
+      transition: { staggerChildren: 0.1 }
     }
   };
 
@@ -25,11 +22,7 @@ const Dashboard = () => {
     visible: {
       y: 0,
       opacity: 1,
-      transition: {
-        type: 'spring',
-        damping: 10,
-        stiffness: 100
-      }
+      transition: { type: 'spring', damping: 10, stiffness: 100 }
     },
     hover: {
       scale: 1.03,
@@ -42,17 +35,20 @@ const Dashboard = () => {
     visible: {
       opacity: 1,
       x: 0,
-      transition: {
-        duration: 0.8,
-        ease: 'easeOut'
-      }
+      transition: { duration: 0.8, ease: 'easeOut' }
     }
   };
 
   return (
-    <div className="font-sans w-full text-gray-200 bg-gradient-to-br from-[#0f172a] to-[#1e293b] min-h-screen">
+    <div
+      className="
+        font-sans w-full min-h-screen
+        bg-gradient-to-br from-white to-gray-100 text-black
+        dark:from-[#0f172a] dark:to-[#1e293b] dark:text-gray-200
+      "
+    >
       <main className="w-full px-0">
-        {/* Top Section - Stats Grid */}
+        {/* Top Section */}
         <motion.div
           initial="hidden"
           animate="visible"
@@ -60,16 +56,24 @@ const Dashboard = () => {
           className="w-full px-4 md:px-6 py-6"
         >
           <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {[OverallMood, MoodTrend, LastAnalysis, TotalEntries].map((Component, index) => (
-              <motion.div
-                key={index}
-                variants={cardVariants}
-                whileHover="hover"
-                className="bg-gradient-to-br from-gray-800 to-gray-900 p-5 rounded-xl shadow-lg backdrop-blur-sm border border-gray-700/50"
-              >
-                <Component />
-              </motion.div>
-            ))}
+            {[OverallMood, MoodTrend, LastAnalysis, TotalEntries].map(
+              (Component, index) => (
+                <motion.div
+                  key={index}
+                  variants={cardVariants}
+                  whileHover="hover"
+                  className="
+                    bg-white border border-gray-300 text-black
+                    dark:bg-gray-800 dark:border-gray-700 dark:text-white
+                    p-5 rounded-xl shadow-lg backdrop-blur-sm
+                  "
+                >
+                  <div className="text-blue-700 dark:text-blue-400">
+                    <Component />
+                  </div>
+                </motion.div>
+              )
+            )}
           </div>
         </motion.div>
 
@@ -80,12 +84,18 @@ const Dashboard = () => {
           variants={chartVariants}
           className="w-full px-4 md:px-6 py-5"
         >
-          <div className="bg-gray-800/70 p-5 rounded-xl shadow-lg backdrop-blur-sm border border-gray-700/50">
+          <div
+            className="
+              bg-white text-black border border-gray-300
+              dark:bg-gray-800 dark:text-white dark:border-gray-700
+              p-5 rounded-xl shadow-lg backdrop-blur-sm
+            "
+          >
             <MoodChart />
           </div>
         </motion.div>
 
-        {/* Bottom Section - Activity and Actions */}
+        {/* Bottom Section */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -96,7 +106,11 @@ const Dashboard = () => {
             <motion.div
               whileHover={{ scale: 1.01 }}
               transition={{ type: 'spring', stiffness: 400 }}
-              className="bg-gray-800/70 p-5 rounded-xl shadow-lg backdrop-blur-sm border border-gray-700/50"
+              className="
+                bg-white border border-gray-300 text-black
+                dark:bg-gray-800 dark:border-gray-700 dark:text-white
+                p-5 rounded-xl shadow-lg backdrop-blur-sm
+              "
             >
               <RecentActivity />
             </motion.div>
@@ -105,39 +119,17 @@ const Dashboard = () => {
             <motion.div
               whileHover={{ scale: 1.01 }}
               transition={{ type: 'spring', stiffness: 400 }}
-              className="bg-gray-800/70 p-5 rounded-xl shadow-lg backdrop-blur-sm border border-gray-700/50"
+              className="
+                bg-white border border-gray-300 text-black
+                dark:bg-gray-800 dark:border-gray-700 dark:text-white
+                p-5 rounded-xl shadow-lg backdrop-blur-sm
+              "
             >
               <ActionButtons />
             </motion.div>
           </div>
         </motion.div>
       </main>
-
-      {/* Floating particles background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        {[...Array(20)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute bg-blue-500/20 rounded-full"
-            style={{
-              width: `${Math.random() * 10 + 5}px`,
-              height: `${Math.random() * 10 + 5}px`,
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              y: [0, 100],
-              opacity: [0.3, 0],
-            }}
-            transition={{
-              duration: Math.random() * 10 + 10,
-              repeat: Infinity,
-              ease: 'linear',
-              delay: Math.random() * 5
-            }}
-          />
-        ))}
-      </div>
     </div>
   );
 };
