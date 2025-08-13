@@ -1,7 +1,7 @@
-import React, { useContext, useEffect } from "react";
-import { ThemeContext } from "../context/ThemeContext";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import { useContext, useEffect } from "react";
+import { ThemeContext } from "../context/ThemeContext";
 
 const About = () => {
     const { theme } = useContext(ThemeContext);
@@ -33,8 +33,8 @@ const About = () => {
             {/* Overview */}
             <h2
                 className={`relative z-10 text-5xl font-extrabold mb-8 text-center tracking-tight transition-colors duration-300 ${theme === "dark"
-                        ? "text-gray-100 bg-gradient-to-r from-purple-400 via-pink-500 to-blue-500 bg-clip-text text-transparent"
-                        : "text-gray-900 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent"
+                    ? "text-gray-100 bg-gradient-to-r from-purple-400 via-pink-500 to-blue-500 bg-clip-text text-transparent"
+                    : "text-gray-900 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent"
                     }`}
                 data-aos="fade-left"
             >
@@ -95,8 +95,8 @@ const About = () => {
                     <div
                         key={i}
                         className={`p-6 rounded-3xl shadow-xl backdrop-blur-md border border-transparent transition-colors duration-300 hover:scale-105 ${theme === "dark"
-                                ? "bg-gray-800/70 border-gray-700"
-                                : "bg-white/80 border-gray-200"
+                            ? "bg-gray-800/70 border-gray-700"
+                            : "bg-white/80 border-gray-200"
                             }`}
                         data-aos="zoom-in"
                         data-aos-delay={i * 150}
