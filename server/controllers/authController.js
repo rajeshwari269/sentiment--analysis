@@ -21,6 +21,7 @@ const signup = async (req, res) => {
   try {
     const { firstname, lastname, email, password } = req.body;
     let profilephoto;
+    
     // Check if user already exists
     const existingUser = await userModel.findOne({ email });
     if (existingUser) {
@@ -45,7 +46,8 @@ const signup = async (req, res) => {
       lastname,
       email,
       password: hashedPassword,
-      profilephoto: profilephoto?.secure_url
+      profilephoto: profilephoto?.secure_url,
+      registrationSource: 'local'
     });
 
     // Generate JWT token
@@ -87,11 +89,21 @@ const signin = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
+    // Check if user can login with password
+    if (!user.canLoginWithPassword()) {
+      return res.status(400).json({ message: "Please use OAuth login method" });
+    }
+
     // Compare passwords
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid password" });
     }
+
+    // Update last login
+    user.lastLoginAt = new Date();
+    user.lastLoginMethod = 'local';
+    await user.save();
 
     // Generate JWT token
     const token = jwt.sign(
@@ -127,6 +139,11 @@ const forgotPassword = async (req, res) => {
   try {
     const user = await userModel.findOne({ email });
     if (!user) return res.status(404).json({ message: "User not found" });
+
+    // Check if user can reset password
+    if (!user.canLoginWithPassword()) {
+      return res.status(400).json({ message: "Password reset not available for OAuth accounts" });
+    }
 
     // Create a reset token
     const resetToken = jwt.sign(
@@ -190,7 +207,7 @@ const resetPassword = async (req, res) => {
   }
 };
 
-// Google OAuth Callback Handler
+// Google OAuth Callback Handler (updated to use new schema methods)
 const googleCallback = async (req, res) => {
   try {
     const { code, state } = req.query;
@@ -227,13 +244,8 @@ const googleCallback = async (req, res) => {
     
     console.log("User data received:", { id: userData.id, email: userData.email, name: userData.name });
 
-    // Check if user already exists
-    let user = await userModel.findOne({
-      $or: [
-        { email: userData.email },
-        { googleId: userData.id.toString() }
-      ]
-    });
+    // Check if user already exists using new schema method
+    let user = await userModel.findByEmailOrGoogle(userData.email, userData.id.toString());
 
     if (user) {
       // User exists, update Google info if needed
@@ -243,8 +255,11 @@ const googleCallback = async (req, res) => {
         user.googleProfile = {
           name: userData.name,
           picture: userData.picture,
-          verifiedEmail: userData.verified_email
+          verifiedEmail: userData.verified_email,
+          locale: userData.locale
         };
+        user.lastLoginAt = new Date();
+        user.lastLoginMethod = 'google';
         await user.save();
       }
     } else {
@@ -259,10 +274,12 @@ const googleCallback = async (req, res) => {
         isEmailVerified: userData.verified_email,
         registrationSource: 'google',
         profilephoto: userData.picture,
+        lastLoginMethod: 'google',
         googleProfile: {
           name: userData.name,
           picture: userData.picture,
-          verifiedEmail: userData.verified_email
+          verifiedEmail: userData.verified_email,
+          locale: userData.locale
         }
       });
     }
@@ -298,7 +315,7 @@ const googleCallback = async (req, res) => {
   }
 };
 
-// GitHub OAuth Callback (existing)
+// GitHub OAuth Callback (unchanged - keeping exactly as is)
 const githubCallback = async (req, res) => {
   try {
     console.log("GitHub callback received:", req.query);
