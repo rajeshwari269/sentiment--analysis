@@ -9,6 +9,7 @@ export const ContactPage = () => {
     
     message: "",
   });
+  const [openFAQ, setOpenFAQ] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -45,6 +46,32 @@ export const ContactPage = () => {
       alert("Error sending message");
     }
   };
+const faqData=[
+  {
+question:"What exactly does SentiLog AI do?",
+answer:"SentiLog AI analyzes emotional patterns in personal journals, social media, and news headlines. It transforms raw text into mood insights, helping users spot emotional trends over time.",
+  },
+  {
+question:"Is my personal journal data safe?",
+answer:"Absolutely. Your entries are encrypted and stored securely. Only you can access your personal logs — our team cannot read your private journal content.",
+  },
+  {
+question:"Can SentiLog AI detect sarcasm or humor?",
+answer:"We’re working on it! Our sentiment engine is trained to pick up subtle tones like sarcasm, but humor can be tricky for any AI. Over time, with more user feedback, it gets better at catching these nuances.",
+  },
+  {
+question:"How accurate is the sentiment detection?",
+answer:"Our accuracy rate currently ranges between 85%–92%, depending on the complexity of the text. Emotional nuances, cultural context, and slang can slightly affect results.",
+  },
+  {
+    question:"How can I suggest a new feature?",
+    answer:"Simply fill out the feedback form below. We review every submission and prioritize features that enhance user experience and data accuracy."
+  },
+  {
+question:"What’s the best way to get in touch with the team?",
+answer:"The feedback form on this page is the fastest way. For business inquiries, you can also email us",
+  },
+]
 
   return (
     <>
@@ -176,6 +203,38 @@ export const ContactPage = () => {
 
           </form>
         </div>
+         {/* FAQ Section */}
+      <div className="max-w-4xl mx-auto mt-16">
+        <h2 className="text-3xl font-bold mb-6" style={{ color: "var(--heading)" }}>
+          Frequently Asked Questions
+        </h2>
+        <div className="space-y-4">
+          {faqData.map((item, index) => (
+            <div
+              key={index}
+              className="border rounded-lg"
+              style={{ borderColor: "var(--border)" }}
+            >
+              <button
+                onClick={() => setOpenFAQ(openFAQ === index ? null : index)}
+                className="w-full flex justify-between items-center p-4 font-semibold bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white text-center py-4 rounded"
+                style={{ color: "var(--heading)" }}
+              >
+                {item.question}
+                <span>{openFAQ === index ? "-" : "+"}</span>
+              </button>
+              {openFAQ === index && (
+                <div
+                  className="p-4 text-sm"
+                  style={{ color: "var(--body-text)" }}
+                >
+                  {item.answer}
+                </div>
+              )}
+            </div>
+          ))} 
+          </div>
+          </div>
       </div>
     </>
   );
