@@ -7,6 +7,8 @@ import MoodTrend from '../components/dashboard/MoodTrend';
 import OverallMood from '../components/dashboard/OverallMood';
 import RecentActivity from '../components/dashboard/RecentActivity';
 import TotalEntries from '../components/dashboard/TotalEntries';
+import BacktoTopButton from "../components/BackToTop"
+
 
 const Dashboard = () => {
   const containerVariants = {
@@ -127,6 +129,7 @@ const Dashboard = () => {
             >
               <ActionButtons />
             </motion.div>
+            <BacktoTopButton />
           </div>
         </motion.div>
       </main>
