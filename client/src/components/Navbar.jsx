@@ -4,14 +4,20 @@ import { ThemeContext } from "../context/ThemeContext";
 import ThemeToggle from "./ThemeToggle";
 import { motion } from "framer-motion";
 import { useUser } from '../context/UserContext';
+import { IoHome } from "react-icons/io5";
+import { TbAnalyzeFilled } from "react-icons/tb";
+import { IoIosJournal } from "react-icons/io";
+import { FaRegNewspaper } from "react-icons/fa";
+import { MdDashboard } from "react-icons/md";
+import { BsInfoSquareFill } from "react-icons/bs";
 
 const navLinks = [
-  { to: "/", label: "Home" },
-  { to: "/analyze", label: "Analyze" },
-  { to: "/journal", label: "Journal" },
-  { to: "/news", label: "News" },
-  { to: "/dashboard", label: "Dashboard" },
-  { to: "/about", label: "About" },
+  { to: "/", label: "Home" ,icon: <IoHome/>},
+  { to: "/analyze", label: "Analyze" ,icon: <TbAnalyzeFilled/> },
+  { to: "/journal", label: "Journal",icon: <IoIosJournal/> },
+  { to: "/news", label: "News",icon: <FaRegNewspaper/> },
+  { to: "/dashboard", label: "Dashboard",icon: <MdDashboard/> },
+  { to: "/about", label: "About" ,icon: <BsInfoSquareFill/>},
 ];
 
 const Logo = ({ theme, currentColors }) => (
@@ -162,7 +168,7 @@ const Navbar = () => {
 
   return (
     <nav
-      className="sticky top-0 z-50 backdrop-blur-xl shadow-lg flex items-center justify-between px-4 py-3 md:px-10 border-b transition-all duration-300"
+      className="sticky top-0 z-50 backdrop-blur-4xl shadow-lg flex items-center justify-between px-4 py-3 md:px-10 border-b transition-all duration-300"
       style={{
         backgroundColor: `var(--nav-bg, ${currentColors["--nav-bg"]})`,
         borderBottomColor: `var(--nav-border, ${currentColors["--nav-border"]})`,
@@ -275,7 +281,7 @@ const Navbar = () => {
         <motion.div
           initial={{ opacity: 0, y: -4, scale: 0.98 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.3, ease: "easeInOut" }}
+          transition={{ duration: 0.4, ease: "easeInOut" }}
           className="absolute top-full left-0 w-full backdrop-blur-xl shadow-lg flex flex-col items-center md:hidden animate-fade-in border-b z-50"
           style={{
             backgroundColor: currentColors["--nav-bg"],
@@ -295,7 +301,16 @@ const Navbar = () => {
               })}
               onClick={() => setOpen(false)}
             >
-              {link.label}
+              <div className="flex gap-8 px-4 items-center">
+                <p>
+                  {link.icon}
+                </p>
+                <p>
+                  {link.label}
+                </p>
+                
+              </div>
+              
             </NavLink>
           ))}
 
