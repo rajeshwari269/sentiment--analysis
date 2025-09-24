@@ -2,6 +2,7 @@ import React, { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { ThemeContext } from "../context/ThemeContext";
 import AnimatedBackground from "../components/AnimatedBackground";
+import { Eye, EyeOff } from "lucide-react";
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -10,6 +11,7 @@ function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -131,39 +133,39 @@ function LoginPage() {
             disabled={loading}
             className="p-3 border border-gray-300 dark:border-gray-600 rounded text-gray-900 dark:text-gray-100 placeholder-gray-400 bg-white/80 dark:bg-gray-700/80 backdrop-blur-sm disabled:opacity-50 disabled:cursor-not-allowed"
           />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            disabled={loading}
-            className="p-3 border border-gray-300 dark:border-gray-600 rounded text-gray-900 dark:text-gray-100 placeholder-gray-400 bg-white/80 dark:bg-gray-700/80 backdrop-blur-sm disabled:opacity-50 disabled:cursor-not-allowed"
-          />
-          {error && <p className="text-red-600">{error}</p>}
+          <div className="relative">
+           <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              disabled={loading}
+              className="p-3 border border-gray-300 dark:border-gray-600 rounded w-full pr-12
+               text-gray-900 dark:text-gray-100 placeholder-gray-400
+               bg-white/80 dark:bg-gray-700/80 backdrop-blur-sm
+               disabled:opacity-50 disabled:cursor-not-allowed"
+            />
+           <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 bg-transparent border-none cursor-pointer
+               outline-none focus:outline-none focus-visible:outline-none active:outline-none 
+               focus:ring-0 focus:border-0 focus:shadow-none active:bg-transparent hover:bg-transparent
+               [&:focus]:outline-none [&:active]:outline-none"
+              style={{ outline: 'none', boxShadow: 'none' }}
+            >
+           {showPassword ? <EyeOff size={20} className="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100" /> : <Eye size={20} className="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100" />}
+           </button>
+          </div>
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-3 rounded text-white transition font-semibold
-              ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}
-            `}
+            className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600 text-white py-3 px-4 rounded-lg transition-all duration-300 shadow-lg hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
-            {loading ? (
-              <span className="flex items-center justify-center gap-2">
-                <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24" fill="none">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8v4l3.5-3.5L12 0v4a8 8 0 01-8 8z"
-                  />
-                </svg>
-                Logging in...
-              </span>
-            ) : (
-              "Login"
-            )}
+            {loading ? "Signing In..." : "Sign In"}
           </button>
+          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
         </form>
         <div className="mt-6 flex flex-col gap-2 items-center">
         <div className="w-full flex justify-center mt-2">
