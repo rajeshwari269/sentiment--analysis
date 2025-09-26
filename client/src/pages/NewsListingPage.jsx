@@ -25,98 +25,6 @@ const NewsListingPage = () => {
     });
   }, [theme]);
 
-  // Mock data - replace with actual API call
-  const mockNews = [
-    {
-      id: 1,
-      title: "Global Climate Summit Reaches Historic Agreement on Carbon Neutrality",
-      description: "World leaders unite on comprehensive climate action plan with binding commitments for carbon reduction, marking a significant step forward in international environmental cooperation.",
-      source: "Environmental News Network",
-      publishedAt: "2024-09-26T10:30:00Z",
-      sentiment: "Positive",
-      confidence: 0.85,
-      url: "https://example.com/climate-summit",
-      category: "Environment"
-    },
-    {
-      id: 2,
-      title: "Stock Markets Show Mixed Results Amid Economic Uncertainty",
-      description: "Trading volumes remain steady as investors await quarterly earnings reports from major corporations, with tech stocks showing resilience despite market volatility.",
-      source: "Financial Times",
-      publishedAt: "2024-09-26T09:15:00Z",
-      sentiment: "Neutral",
-      confidence: 0.72,
-      url: "https://example.com/stock-markets",
-      category: "Finance"
-    },
-    {
-      id: 3,
-      title: "Severe Weather System Causes Major Disruptions Across Coastal Regions",
-      description: "Emergency services respond to unprecedented weather conditions affecting thousands of residents, with evacuation orders issued for vulnerable areas.",
-      source: "Breaking News Today",
-      publishedAt: "2024-09-26T08:45:00Z",
-      sentiment: "Negative",
-      confidence: 0.91,
-      url: "https://example.com/weather-emergency",
-      category: "Breaking News"
-    },
-    {
-      id: 4,
-      title: "Local School District Receives Record-Breaking Education Grant for STEM Programs",
-      description: "$2 million federal grant will fund innovative STEM programs and technology upgrades across 15 schools, benefiting over 8,000 students.",
-      source: "Education Weekly",
-      publishedAt: "2024-09-26T07:20:00Z",
-      sentiment: "Positive",
-      confidence: 0.78,
-      url: "https://example.com/education-grant",
-      category: "Education"
-    },
-    {
-      id: 5,
-      title: "Major Tech Company Reports Quarterly Earnings Meeting Expectations",
-      description: "Results align with analyst projections showing steady growth in cloud services and software licensing revenue, maintaining market stability.",
-      source: "Tech Reporter",
-      publishedAt: "2024-09-26T06:00:00Z",
-      sentiment: "Neutral",
-      confidence: 0.68,
-      url: "https://example.com/tech-earnings",
-      category: "Technology"
-    },
-    {
-      id: 6,
-      title: "Healthcare System Faces Critical Staffing Shortage Crisis",
-      description: "Hospitals nationwide report alarming staffing gaps as demand for healthcare services continues to outpace available resources, raising concerns about patient care quality.",
-      source: "Health News Daily",
-      publishedAt: "2024-09-25T22:30:00Z",
-      sentiment: "Negative",
-      confidence: 0.83,
-      url: "https://example.com/healthcare-crisis",
-      category: "Healthcare"
-    },
-    {
-      id: 7,
-      title: "Breakthrough Medical Research Shows Promise for Cancer Treatment",
-      description: "New immunotherapy approach demonstrates remarkable results in clinical trials, offering hope for patients with previously untreatable forms of cancer.",
-      source: "Medical Journal Today",
-      publishedAt: "2024-09-25T20:15:00Z",
-      sentiment: "Positive",
-      confidence: 0.89,
-      url: "https://example.com/cancer-breakthrough",
-      category: "Healthcare"
-    },
-    {
-      id: 8,
-      title: "Cryptocurrency Markets Experience Continued Volatility",
-      description: "Digital currencies show mixed performance with regulatory uncertainty continuing to impact investor confidence and market stability.",
-      source: "Crypto News Daily",
-      publishedAt: "2024-09-25T18:30:00Z",
-      sentiment: "Neutral",
-      confidence: 0.65,
-      url: "https://example.com/crypto-volatility",
-      category: "Finance"
-    }
-  ];
-
   useEffect(() => {
     fetchNews();
   }, []);
@@ -128,20 +36,33 @@ const NewsListingPage = () => {
   const fetchNews = async () => {
     try {
       setLoading(true);
-      // Replace this with actual API call to your Express server
-      // const response = await api.get('/api/news/daily');
-      // setNews(response.data);
-      
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1200));
-      
-      setNews(mockNews);
       setError(null);
-      toast.success('Daily news loaded successfully!');
+      
+      // Replace mock data with actual API call
+         const response = await api.get('/api/news')
+      
+      // Transform the data to match your expected format if needed
+      const newsData = response.data.map(article => ({
+        id: article._id || article.id,
+        title: article.title,
+        description: article.description || article.content,
+        source: article.source || article.sourceName,
+        publishedAt: article.publishedAt || article.date,
+        sentiment: article.sentiment || 'Neutral',
+        confidence: article.confidence || 0.5,
+        url: article.url,
+        category: article.category || 'General'
+      }));
+      
+      setNews(newsData);
+      toast.success(`Loaded ${newsData.length} news articles successfully!`);
     } catch (err) {
       setError('Failed to fetch daily news. Please try again later.');
       toast.error('Failed to load news articles');
       console.error('Error fetching news:', err);
+      
+      // Optional: Set empty array or keep existing data
+      setNews([]);
     } finally {
       setLoading(false);
     }
@@ -217,6 +138,14 @@ const NewsListingPage = () => {
 
   const refreshNews = () => {
     fetchNews();
+  };
+
+  const handleReadArticle = (url) => {
+    if (url) {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    } else {
+      toast.error('Article URL not available');
+    }
   };
 
   if (loading) {
@@ -295,10 +224,11 @@ const NewsListingPage = () => {
               
               <button
                 onClick={refreshNews}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full hover:shadow-lg transition-all duration-200 transform hover:scale-105"
+                disabled={loading}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full hover:shadow-lg transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
-                <RefreshCw className="w-4 h-4" />
-                Refresh
+                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                {loading ? 'Loading...' : 'Refresh'}
               </button>
             </div>
           </div>
@@ -421,7 +351,9 @@ const NewsListingPage = () => {
               <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                 {searchTerm 
                   ? 'Try adjusting your search terms or selecting a different sentiment filter.'
-                  : 'Try selecting a different sentiment filter to see more articles.'
+                  : news.length === 0 
+                    ? 'No news articles available. Please try refreshing.'
+                    : 'Try selecting a different sentiment filter to see more articles.'
                 }
               </p>
             </div>
@@ -473,7 +405,10 @@ const NewsListingPage = () => {
                             <span>{formatDate(article.publishedAt)}</span>
                           </div>
                           
-                          <button className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all duration-200 transform hover:scale-105">
+                          <button 
+                            onClick={() => handleReadArticle(article.url)}
+                            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all duration-200 transform hover:scale-105"
+                          >
                             Read Full Article
                             <ExternalLink className="w-4 h-4" />
                           </button>
