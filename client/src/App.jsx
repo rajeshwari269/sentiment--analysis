@@ -14,6 +14,7 @@ import AnalyzePage from "./pages/AnalyzePage";
 import {ContactPage} from "./pages/ContactPage";
 import Dashboard from "./pages/Dashboard";
 import ForgotPassword from "./pages/ForgotPassword";
+import NewsListingPage from "./pages/NewsListingPage";
 import HomePage from "./pages/HomePage";
 import JournalPage from "./pages/JournalPage";
 import LoginPage from "./pages/LoginPage";
@@ -55,6 +56,7 @@ function App() {
         <Route path="/oauth-callback" element={<OAuthCallback />} />
         <Route path="/auth/callback" element={<OAuthCallback />} />
         <Route path="/user-profile" element={<UserProfile />} />
+        <Route path="/news-listing" element={<NewsListingPage />} />
       </Routes>
 
         <Footer />
