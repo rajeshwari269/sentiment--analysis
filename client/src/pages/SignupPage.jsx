@@ -2,6 +2,7 @@ import React, { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { ThemeContext } from "../context/ThemeContext";
 import AnimatedBackground from "../components/AnimatedBackground";
+import { Eye, EyeOff } from "lucide-react";
 
 function SignupPage() {
   const navigate = useNavigate();
@@ -16,6 +17,7 @@ function SignupPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -231,16 +233,36 @@ function SignupPage() {
             disabled={loading}
             className="p-3 border border-gray-300 dark:border-gray-600 rounded text-gray-900 dark:text-gray-100 placeholder-gray-400 bg-white/80 dark:bg-gray-700/80 backdrop-blur-sm disabled:opacity-50 disabled:cursor-not-allowed"
           />
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={form.password}
-            onChange={handleChange}
-            required
-            disabled={loading}
-            className="p-3 border border-gray-300 dark:border-gray-600 rounded text-gray-900 dark:text-gray-100 placeholder-gray-400 bg-white/80 dark:bg-gray-700/80 backdrop-blur-sm disabled:opacity-50 disabled:cursor-not-allowed"
-          />
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              placeholder="Password"
+              value={form.password}
+              onChange={handleChange}
+              required
+              disabled={loading}
+              className="p-3 border border-gray-300 dark:border-gray-600 rounded w-full pr-12
+               text-gray-900 dark:text-gray-100 placeholder-gray-400
+               bg-white/80 dark:bg-gray-700/80 backdrop-blur-sm
+               disabled:opacity-50 disabled:cursor-not-allowed"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 bg-transparent border-none cursor-pointer
+               outline-none focus:outline-none focus-visible:outline-none active:outline-none 
+               focus:ring-0 focus:border-0 focus:shadow-none active:bg-transparent hover:bg-transparent
+               [&:focus]:outline-none [&:active]:outline-none"
+              style={{ outline: 'none', boxShadow: 'none' }}
+            >
+              {showPassword ? (
+                <EyeOff size={20} className="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100" />
+              ) : (
+                <Eye size={20} className="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100" />
+              )}
+            </button>
+          </div>
          
           {success && <p className="text-green-600">{success}</p>}
           {error && <p className="text-red-600">{error}</p>}
