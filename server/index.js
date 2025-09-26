@@ -1,54 +1,59 @@
+// 1. ENVIRONMENT VARIABLES SETUP (MUST be the first line)
+require("dotenv").config(); 
+
+// 2. Core Dependencies
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const dotenv = require("dotenv");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
-require("dotenv").config();
 const setupSwagger = require("./config/swagger");
 const errorHandler = require("./middleware/errorHandler");
-require("./utils/cronJob"); // this starts the cron when the server starts
- // Fetch and post news immediately on server start
+require("./utils/cronJob"); // starts the cron job when the server starts
 
+// 3. Route Imports
 const journalRoutes = require("./routes/journal");
 const newsRoutes = require("./routes/news");
 const authRouter = require("./routes/authRoute");
 const analyzeRoutes = require("./routes/analyze");
-const contactRoutes =require("./routes/Contact")
+const contactRoutes = require("./routes/Contact");
 
-dotenv.config();
 const app = express();
+const PORT = process.env.PORT || 8080; // Using 8080 as per your .env
 
+// 4. Middleware Setup
 app.use(cors());
-
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// Session middleware - configure before routes
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'your-fallback-secret-key',
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: process.env.NODE_ENV === 'production', // true in production with HTTPS
-    httpOnly: true,
-    maxAge: 14 * 24 * 60 * 60 * 1000 // 14 days in milliseconds
-  }
-}));
-
-// Connect to MongoDB first
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log("✅ MongoDB connected");
-  })
-  .catch((err) => console.error("❌ MongoDB connection error:", err));
-
-app.get("/", (req, res) => {
-  res.send("Server is alive");
+// 5. Session Store Configuration
+// The MongoStore must be configured before the session middleware is used.
+const sessionStore = MongoStore.create({
+    mongoUrl: process.env.MONGO_URI, // Connect-mongo uses the direct URI string
+    collectionName: 'sessions', // Optional: specify session collection name
+    ttl: 14 * 24 * 60 * 60, // 14 days in seconds
+    autoRemove: 'native' // Uses MongoDB's TTL index feature
 });
 
-// API routes
+// Session middleware
+app.use(session({
+    secret: process.env.JWT_USER_SECRET || 'your-fallback-secret-key', // Using a secure secret
+    resave: false,
+    saveUninitialized: false,
+    store: sessionStore, // Use the configured MongoStore
+    cookie: {
+        secure: process.env.NODE_ENV === 'production', // true in production with HTTPS
+        httpOnly: true,
+        maxAge: 14 * 24 * 60 * 60 * 1000 // 14 days in milliseconds
+    }
+}));
+
+// Root check route
+app.get("/", (req, res) => {
+    res.send("Server is alive");
+});
+
+// 6. API routes
 app.use('/api/journal', journalRoutes);
 app.use('/api/news', newsRoutes);
 app.use('/api/analyze', analyzeRoutes);
@@ -61,17 +66,25 @@ setupSwagger(app);
 
 // 404 error handler
 app.use((req, res, next) => {
-  res.status(404).json({ message: "Not Found" });
+    res.status(404).json({ message: "Not Found" });
 });
 
 // Global error handler
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({message:"Internal Error"});
+    console.error(err.stack);
+    res.status(500).json({ message: "Internal Error" });
 });
 
-// Start server (only once)
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () =>
-  console.log(`🚀 Server running on http://localhost:${PORT}`)
-);
+// 7. Connect to MongoDB and Start Server
+mongoose
+    .connect(process.env.MONGO_URI)
+    .then(() => {
+        console.log("✅ MongoDB connected");
+        // Start the server ONLY AFTER the database connection is successful
+        app.listen(PORT, () =>
+            console.log(`🚀 Server running on http://localhost:${PORT}`)
+        );
+    })
+    .catch((err) => {
+        console.error("❌ MongoDB connection error:", err);
+    });
