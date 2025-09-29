@@ -15,8 +15,7 @@ const navLinks = [
   { to: "/", label: "Home" ,icon: <IoHome/>},
   { to: "/analyze", label: "Analyze" ,icon: <TbAnalyzeFilled/> },
   { to: "/journal", label: "Journal",icon: <IoIosJournal/> },
-  { to: "/news", label: "News",icon: <FaRegNewspaper/> },
-  { to: "/news-listing", label: "News Listing",icon: <FaListUl/> },
+  { to: "/news-listing", label: "News",icon: <FaListUl/> },
   { to: "/dashboard", label: "Dashboard",icon: <MdDashboard/> },
   { to: "/about", label: "About" ,icon: <BsInfoSquareFill/>},
 ];

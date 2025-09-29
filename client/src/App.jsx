@@ -18,7 +18,7 @@ import NewsListingPage from "./pages/NewsListingPage";
 import HomePage from "./pages/HomePage";
 import JournalPage from "./pages/JournalPage";
 import LoginPage from "./pages/LoginPage";
-import NewsPage from "./pages/NewsPage";
+// import NewsPage from "./pages/NewsPage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import ResetPassword from "./pages/ResetPassword";
 import SignupPage from "./pages/SignupPage";
@@ -45,7 +45,6 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/analyze" element={<AnalyzePage />} />
         <Route path="/journal" element={<JournalPage />} />
-        <Route path="/news" element={<NewsPage />} />
         <Route path="/about" element={<About />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/login" element={<LoginPage />} />
