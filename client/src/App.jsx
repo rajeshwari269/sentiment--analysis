@@ -14,10 +14,11 @@ import AnalyzePage from "./pages/AnalyzePage";
 import { ContactPage } from "./pages/ContactPage";
 import Dashboard from "./pages/Dashboard";
 import ForgotPassword from "./pages/ForgotPassword";
+import NewsListingPage from "./pages/NewsListingPage";
 import HomePage from "./pages/HomePage";
 import JournalPage from "./pages/JournalPage";
 import LoginPage from "./pages/LoginPage";
-import NewsPage from "./pages/NewsPage";
+// import NewsPage from "./pages/NewsPage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import ResetPassword from "./pages/ResetPassword";
 import SignupPage from "./pages/SignupPage";
@@ -41,13 +42,12 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/analyze" element={<AnalyzePage />} />
           <Route path="/journal" element={<JournalPage />} />
-          <Route path="/news" element={<NewsPage />} />
           <Route path="/about" element={<About />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/help" element={<HelpCenterPage />} />
-
+          <Route path="/news-listing" element={<NewsListingPage />} />
           <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
@@ -55,7 +55,6 @@ function App() {
           <Route path="/auth/callback" element={<OAuthCallback />} />
           <Route path="/user-profile" element={<UserProfile />} />
         </Routes>
-
         <Footer />
       </Router>
     </>

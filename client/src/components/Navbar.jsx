@@ -7,7 +7,7 @@ import { useUser } from '../context/UserContext';
 import { IoHome } from "react-icons/io5";
 import { TbAnalyzeFilled } from "react-icons/tb";
 import { IoIosJournal } from "react-icons/io";
-import { FaRegNewspaper } from "react-icons/fa";
+import { FaRegNewspaper, FaListUl } from "react-icons/fa";
 import { MdDashboard } from "react-icons/md";
 import { BsInfoSquareFill } from "react-icons/bs";
 
@@ -15,7 +15,7 @@ const navLinks = [
   { to: "/", label: "Home" ,icon: <IoHome/>},
   { to: "/analyze", label: "Analyze" ,icon: <TbAnalyzeFilled/> },
   { to: "/journal", label: "Journal",icon: <IoIosJournal/> },
-  { to: "/news", label: "News",icon: <FaRegNewspaper/> },
+  { to: "/news-listing", label: "News",icon: <FaListUl/> },
   { to: "/dashboard", label: "Dashboard",icon: <MdDashboard/> },
   { to: "/about", label: "About" ,icon: <BsInfoSquareFill/>},
 ];
