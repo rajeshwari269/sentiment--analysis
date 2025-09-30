@@ -42,7 +42,6 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/analyze" element={<AnalyzePage />} />
           <Route path="/journal" element={<JournalPage />} />
-          <Route path="/news" element={<NewsPage />} />
           <Route path="/about" element={<About />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/login" element={<LoginPage />} />
