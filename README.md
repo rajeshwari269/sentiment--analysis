@@ -13,7 +13,7 @@ SentiLog AI is an open-source platform that combines news sentiment analysis and
 
 ---
 
-## 🌟 Core Features
+##  Core Features
 
 SentiLog AI provides a unique fusion of sentiment-aware news analysis and personal mental wellness tracking through the following key features:
 
